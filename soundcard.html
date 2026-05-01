@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundCard — 插卡生成你的音乐 · Unlock Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === PLACEHOLDER SKELETON === */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#111110;--neon:#C8F03A;--txt:#F5F4EF;
+  --dim:rgba(180,178,168,.6);--dim2:rgba(180,178,168,.55);
+  --card-bg:rgba(200,240,58,.04);--card-border:rgba(200,240,58,.15);
+  --card-active-bg:rgba(200,240,58,.10);--card-active-border:rgba(200,240,58,.55);
+  --mono:'Share Tech Mono',monospace;--pixel:'Press Start 2P',monospace;--sans:'Space Grotesk',sans-serif;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(17,17,16,.88);backdrop-filter:blur(10px);border-bottom:1px solid rgba(200,240,58,.06)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--txt)}
+.nav-logo img{width:30px;height:30px;border-radius:6px}
+.nav-brand{display:flex;flex-direction:column}
+.n1{font-family:var(--mono);font-size:11px;letter-spacing:.18em;font-weight:700}
+.n2{font-family:var(--sans);font-size:9px;letter-spacing:.12em;color:var(--dim);margin-top:1px}
+.nav-r{display:flex;align-items:center;gap:16px}
+.nav-r a{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--txt)}
+.nav-pill{padding:5px 14px;border:1px solid var(--neon);color:var(--neon)!important;border-radius:3px;transition:all .2s!important}
+.nav-pill:hover{background:var(--neon)!important;color:#111110!important}
+
+/* HERO */
+.hero-txt{margin-top:90px;margin-bottom:.75rem;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:0 20px}
+.hero-badge{font-size:9px;font-family:var(--mono);color:var(--dim);letter-spacing:.18em;text-transform:uppercase}
+.hero-title{font-family:var(--pixel);font-size:clamp(1.2rem,4vw,1.6rem);color:var(--neon);letter-spacing:.06em;line-height:1;text-shadow:0 0 30px rgba(200,240,58,.3)}
+.hero-sub{font-size:14px;color:var(--txt);font-weight:500;letter-spacing:.04em;font-family:var(--sans)}
+.hero-stat{font-size:9px;font-family:var(--mono);color:rgba(180,178,168,.5);letter-spacing:.1em;margin-top:2px}
+
+/* STEP PILLS */
+.step-ind{display:flex;justify-content:center;align-items:center;gap:0;margin:20px auto 28px}
+.step-pill{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:5px 14px;border:1px solid rgba(200,240,58,.15);border-radius:3px;color:var(--dim);cursor:pointer;transition:all .25s;user-select:none}
+.step-pill.active{border-color:var(--neon);color:var(--neon);background:rgba(200,240,58,.08)}
+.step-pill:hover:not(.active){border-color:rgba(200,240,58,.3);color:rgba(200,240,58,.6)}
+.step-dot{width:24px;height:1px;background:rgba(200,240,58,.12);margin:0 4px}
+
+/* ARC STAGE */
+.arc-stage{position:relative;width:100%;max-width:860px;margin:0 auto;height:320px}
+.arc-wrap{position:relative;width:100%;height:100%}
+.arc-card{position:absolute;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;cursor:pointer;transition:all .3s cubic-bezier(.25,.46,.45,.94);display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit}
+.arc-card:hover{border-color:rgba(200,240,58,.35);background:rgba(200,240,58,.07);transform:translateY(-3px)!important}
+.arc-card.selected{border-color:var(--card-active-border);background:var(--card-active-bg);box-shadow:0 0 20px rgba(200,240,58,.1)}
+.ac-inner{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px}
+.ac-zh{font-family:var(--sans);font-size:12px;color:var(--txt);font-weight:500;letter-spacing:.02em}
+.ac-en{font-family:var(--mono);font-size:8px;color:rgba(180,178,168,.7);letter-spacing:.1em;text-transform:uppercase}
+.arc-card.selected .ac-zh{color:var(--neon)}
+.arc-card.selected .ac-en{color:rgba(200,240,58,.6)}
+
+/* PIXEL ICONS */
+.pxicon{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;width:28px;height:28px;margin-bottom:2px}
+.px0{background:transparent;border-radius:1px}
+.px1{background:var(--neon);border-radius:1px;opacity:.7}
+.arc-card.selected .px1{opacity:1}
+.arc-card:hover .px1{opacity:.9}
+
+/* RADIO DEVICE */
+.radio-wrap{display:flex;justify-content:center;margin:-10px auto 0;padding:0 20px}
+.radio{position:relative;width:520px;max-width:92vw;background:linear-gradient(180deg,#1a1a18 0%,#141413 100%);border:1.5px solid rgba(200,240,58,.12);border-radius:14px;padding:20px 24px 16px;box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(200,240,58,.06)}
+
+/* Antenna */
+.antenna{display:flex;justify-content:center;gap:12px;margin-bottom:14px;position:relative}
+.antenna::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:1px;background:rgba(200,240,58,.1)}
+.ant-dot{width:6px;height:6px;border-radius:50%;transition:background .3s}
+.ant-dot.red{background:#5a2020;box-shadow:none}
+.ant-dot.green{background:#2a4a10;box-shadow:none}
+.ant-dot.red.on{background:#ff4444;box-shadow:0 0 8px #ff4444}
+.ant-dot.green.on{background:var(--neon);box-shadow:0 0 8px var(--neon)}
+
+/* Radio top label */
+.radio-label{font-family:var(--mono);font-size:7px;letter-spacing:.15em;color:rgba(200,240,58,.4);margin-bottom:12px;text-transform:uppercase}
+
+/* Speaker + display row */
+.radio-mid{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+
+/* Speakers */
+.speaker{width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,#1a1a18 30%,#0e0e0d 100%);border:1px solid rgba(200,240,58,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.speaker-inner{width:50px;height:50px;border-radius:50%;background:repeating-conic-gradient(rgba(200,240,58,.03) 0% 25%,transparent 25% 50%);border:1px solid rgba(200,240,58,.06)}
+
+/* VU / Waveform display */
+.vu-display{flex:1;height:80px;background:#0a0a09;border:1px solid rgba(200,240,58,.1);border-radius:6px;overflow:hidden;position:relative;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding:8px 6px}
+.vu-bar{width:3px;background:var(--neon);border-radius:1px;opacity:.25;transition:height .15s,opacity .15s}
+.vu-bar.active{opacity:.8}
+.vu-label{position:absolute;top:4px;left:6px;font-family:var(--mono);font-size:6px;color:rgba(200,240,58,.45);letter-spacing:.1em}
+
+/* Frequency band */
+.freq-band{width:100%;height:18px;background:#0a0a09;border:1px solid rgba(200,240,58,.08);border-radius:3px;margin-bottom:12px;position:relative;overflow:hidden;display:flex;align-items:center;padding:0 8px}
+.freq-marks{display:flex;justify-content:space-between;width:100%;font-family:var(--mono);font-size:5px;color:rgba(200,240,58,.4);letter-spacing:.05em}
+.freq-needle{position:absolute;top:0;bottom:0;width:2px;background:var(--neon);opacity:.5;left:35%;transition:left 1.5s ease-in-out}
+
+/* Card slots */
+.card-slots{display:flex;gap:8px;margin-bottom:10px}
+.card-slot{flex:1;height:38px;background:#0e0e0d;border:1px solid rgba(200,240,58,.08);border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;transition:all .3s;cursor:default}
+.card-slot.filled{border-color:rgba(200,240,58,.25);background:rgba(200,240,58,.03)}
+.slot-label{font-family:var(--mono);font-size:7px;letter-spacing:.12em;color:rgba(180,178,168,.65)}
+.slot-val{font-family:var(--sans);font-size:10px;color:rgba(180,178,168,.55);transition:color .3s}
+.card-slot.filled .slot-val{color:var(--neon)}
+.slot-x{font-size:8px;color:var(--dim);cursor:pointer;opacity:0;transition:opacity .2s;margin-left:4px}
+.card-slot.filled .slot-x{opacity:1}
+.slot-x:hover{color:var(--neon)}
+
+/* Lyrics area */
+.lyrics-outer{max-width:520px;margin:16px auto 0;padding:0 20px;max-height:0;overflow:hidden;transition:max-height .5s ease,opacity .4s;opacity:0}
+.lyrics-outer.open{max-height:260px;opacity:1}
+.lyrics-box{background:linear-gradient(180deg,#1a1a18 0%,#141413 100%);border:1px solid rgba(200,240,58,.12);border-radius:10px;padding:14px 18px}
+.lyrics-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.lyrics-label{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:rgba(180,178,168,.7);text-transform:uppercase}
+.lyrics-count{font-family:var(--mono);font-size:8px;color:rgba(180,178,168,.6);letter-spacing:.05em}
+.lyrics-ta{width:100%;height:110px;background:#0a0a09;border:1px solid rgba(200,240,58,.08);border-radius:4px;padding:10px;outline:none;resize:none;font-family:var(--sans);font-size:12px;color:var(--neon);line-height:1.6;letter-spacing:.02em;caret-color:var(--neon)}
+.lyrics-ta::placeholder{color:rgba(200,240,58,.28);font-family:var(--mono);font-size:10px;letter-spacing:.05em;line-height:1.7}
+.lyrics-ta:focus{border-color:rgba(200,240,58,.25)}
+.lyrics-ta::-webkit-scrollbar{width:3px}
+.lyrics-ta::-webkit-scrollbar-thumb{background:rgba(200,240,58,.15);border-radius:2px}
+.lyrics-hint{font-family:var(--mono);font-size:7px;color:rgba(180,178,168,.55);letter-spacing:.08em;margin-top:6px}
+
+/* Options & Generate row */
+.radio-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.radio-opts{display:flex;gap:12px;align-items:center}
+.opt-group{display:flex;align-items:center;gap:4px}
+.opt-label{font-family:var(--mono);font-size:7px;letter-spacing:.12em;color:rgba(180,178,168,.65);text-transform:uppercase}
+.tog-group{display:flex;border:1px solid rgba(200,240,58,.1);border-radius:2px;overflow:hidden}
+.tog-btn{font-family:var(--mono);font-size:9px;letter-spacing:.05em;padding:4px 10px;background:transparent;border:none;color:rgba(180,178,168,.6);cursor:pointer;transition:all .2s}
+.tog-btn.active{background:var(--neon);color:#111110;font-weight:700}
+.tog-btn:hover:not(.active){color:var(--txt)}
+
+.btn-gen{font-family:var(--mono);font-size:9px;letter-spacing:.15em;padding:8px 20px;background:var(--neon);color:#111110;border:none;border-radius:3px;cursor:pointer;font-weight:700;text-transform:uppercase;transition:all .3s}
+.btn-gen:hover{box-shadow:0 0 20px rgba(200,240,58,.35)}
+.btn-gen:disabled{opacity:.25;cursor:not-allowed;box-shadow:none}
+.btn-gen.loading{background:transparent;border:1px solid var(--neon);color:var(--neon);pointer-events:none}
+
+/* UNLOCK STUDIO footer on radio */
+.radio-footer{margin-top:8px;font-family:var(--mono);font-size:6px;letter-spacing:.12em;color:rgba(200,240,58,.25);text-transform:uppercase}
+
+/* === BELOW RADIO: category label === */
+.cat-label{text-align:center;margin:24px 0 8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:rgba(180,178,168,.6)}
+
+/* === PLAYER SECTION === */
+.player-section{max-width:520px;margin:28px auto 0;padding:0 20px;display:none}
+.player-section.visible{display:block;animation:fadeUp .5s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.player-box{background:linear-gradient(180deg,#1a1a18 0%,#141413 100%);border:1px solid rgba(200,240,58,.12);border-radius:12px;padding:20px 24px}
+.player-head{display:flex;justify-content:space-between;margin-bottom:14px}
+.player-tag{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:rgba(180,178,168,.6);text-transform:uppercase}
+
+/* Waveform player */
+.wave-box{height:60px;background:#0a0a09;border:1px solid rgba(200,240,58,.1);border-radius:6px;margin-bottom:12px;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding:8px 6px;cursor:pointer;overflow:hidden}
+.wave-b{width:3px;background:var(--neon);border-radius:1px;opacity:.25;transition:opacity .1s}
+.wave-b.on{opacity:.85}
+
+/* Controls */
+.p-controls{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.btn-play{width:36px;height:36px;border-radius:50%;background:var(--neon);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:box-shadow .2s;flex-shrink:0}
+.btn-play:hover{box-shadow:0 0 16px rgba(200,240,58,.4)}
+.btn-play svg{fill:#111110}
+.p-bar{flex:1;height:3px;background:rgba(200,240,58,.1);border-radius:2px;position:relative;cursor:pointer}
+.p-fill{height:100%;background:var(--neon);border-radius:2px;width:0%;transition:width .1s linear}
+.p-time{font-family:var(--mono);font-size:10px;color:rgba(180,178,168,.65);letter-spacing:.05em;flex-shrink:0;min-width:70px;text-align:right}
+
+/* Prompt */
+.prompt-box{background:#0a0a09;border:1px solid rgba(200,240,58,.08);border-radius:6px;padding:12px;margin-bottom:16px}
+.prompt-label{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:rgba(180,178,168,.6);text-transform:uppercase;margin-bottom:6px}
+.prompt-txt{font-family:var(--mono);font-size:11px;color:var(--neon);line-height:1.6;letter-spacing:.03em;word-break:break-all;white-space:pre-wrap}
+.prompt-copy{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:4px 12px;border:1px solid rgba(200,240,58,.2);border-radius:2px;background:transparent;color:rgba(180,178,168,.6);cursor:pointer;transition:all .2s}
+.prompt-copy:hover{border-color:var(--neon);color:var(--neon)}
+
+/* Download */
+.dl-row{display:flex;justify-content:center;gap:12px}
+.btn-dl{border-radius:4px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;cursor:pointer;transition:all .3s;text-align:center;padding:12px 28px}
+.dl-wav{background:var(--neon);border:1px solid var(--neon);color:#111110;font-weight:700}
+.dl-wav:hover{box-shadow:0 0 20px rgba(200,240,58,.35)}
+.dl-price{display:block;font-size:16px;font-weight:700;margin-top:2px}
+
+/* Payment Modal */
+.pay-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.pay-overlay.open{display:flex}
+.pay-modal{background:linear-gradient(180deg,#1e1e1c 0%,#161615 100%);border:1px solid rgba(200,240,58,.15);border-radius:14px;padding:28px 32px;max-width:380px;width:90vw;text-align:center;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.pay-close{position:absolute;top:12px;right:16px;font-size:18px;color:rgba(180,178,168,.5);cursor:pointer;background:none;border:none;font-family:var(--mono);transition:color .2s}
+.pay-close:hover{color:var(--neon)}
+.pay-title{font-family:var(--pixel);font-size:10px;color:var(--neon);letter-spacing:.08em;margin-bottom:4px}
+.pay-sub{font-family:var(--sans);font-size:13px;color:var(--txt);margin-bottom:4px}
+.pay-price{font-family:var(--pixel);font-size:22px;color:var(--neon);margin:12px 0 16px;text-shadow:0 0 16px rgba(200,240,58,.3)}
+.pay-qr{width:220px;height:auto;border-radius:10px;border:2px solid rgba(200,240,58,.15);margin:0 auto 16px;overflow:hidden}
+.pay-qr img{width:100%;height:auto;display:block}
+.pay-qr-placeholder{font-family:var(--mono);font-size:10px;color:#999;text-align:center;line-height:1.6;padding:20px}
+.pay-hint{font-family:var(--mono);font-size:9px;color:rgba(180,178,168,.55);letter-spacing:.05em;margin-bottom:16px;line-height:1.6}
+.pay-done{font-family:var(--mono);font-size:11px;letter-spacing:.12em;padding:10px 32px;background:var(--neon);color:#111110;border:none;border-radius:4px;cursor:pointer;font-weight:700;transition:all .3s}
+.pay-done:hover{box-shadow:0 0 20px rgba(200,240,58,.35)}
+.pay-note{font-family:var(--mono);font-size:7px;color:rgba(180,178,168,.4);margin-top:12px;letter-spacing:.06em}
+
+/* FOOTER */
+footer{display:flex;justify-content:space-between;align-items:center;padding:48px 28px 24px;margin-top:40px}
+.ft-logo{display:flex;align-items:center;gap:8px}
+.ft-icon{width:20px;height:20px;background:var(--neon);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--pixel);font-size:8px;color:#111110}
+.ft-name{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.ft-copy{font-family:var(--mono);font-size:9px;color:rgba(180,178,168,.5);letter-spacing:.08em}
+
+/* Loading overlay */
+.load-overlay{display:none;position:absolute;inset:0;background:rgba(10,10,9,.92);border-radius:14px;z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.load-overlay.active{display:flex;animation:fadeUp .3s ease-out}
+.load-bars{display:flex;align-items:center;gap:4px;height:30px}
+.load-bar{width:3px;background:var(--neon);border-radius:1px;animation:lPulse .7s ease-in-out infinite alternate}
+@keyframes lPulse{from{height:6px;opacity:.3}to{height:28px;opacity:1}}
+.load-txt{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--neon);text-transform:uppercase}
+.load-prog{width:160px;height:2px;background:rgba(200,240,58,.1);border-radius:1px;overflow:hidden}
+.load-prog-fill{height:100%;background:var(--neon);border-radius:1px;width:0%;transition:width .3s}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:10px 16px}
+  .nav-brand{display:none}
+  .hero-txt{margin-top:72px}
+  .arc-stage{height:auto;min-height:200px;padding:0 12px}
+  .radio{padding:16px 14px 12px}
+  .speaker{width:54px;height:54px}
+  .speaker-inner{width:34px;height:34px}
+  .vu-display{height:54px}
+  .card-slots{flex-direction:column;gap:6px}
+  .lyrics-outer{padding:0 12px}
+  .lyrics-outer.open{max-height:280px}
+  .radio-bottom{flex-direction:column;gap:10px}
+  .radio-opts{flex-wrap:wrap;justify-content:center}
+  .player-section{padding:0 12px}
+  footer{flex-direction:column;gap:8px;text-align:center}
+  .dl-row{flex-direction:column;align-items:center}
+  .btn-dl{width:100%;max-width:220px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="logo.png" alt="U" style="width:30px;height:30px;border-radius:6px;object-fit:cover">
+    <div class="nav-brand"><span class="n1">UNLOCK STUDIO</span><span class="n2">解 锁 影 像</span></div>
+  </a>
+  <div class="nav-r">
+    <a href="#community">社群 Community</a>
+    <a href="#community" class="nav-pill">免费加入 JOIN</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-txt">
+  <div class="hero-badge">Unlock Studio 出品</div>
+  <div class="hero-title">SoundCard</div>
+  <div class="hero-sub">插卡，生成你的专属音乐</div>
+  <div class="hero-stat">3 CARDS · 24 STYLES · FREE TO GENERATE · ¥1.9 TO DOWNLOAD</div>
+</div>
+
+<!-- STEP PILLS -->
+<div class="step-ind" id="step-ind">
+  <span class="step-pill active" id="sp0" onclick="switchStep(0)">01 风格</span><span class="step-dot"></span>
+  <span class="step-pill" id="sp1" onclick="switchStep(1)">02 情绪</span><span class="step-dot"></span>
+  <span class="step-pill" id="sp2" onclick="switchStep(2)">03 编曲</span>
+</div>
+
+<!-- ARC CARDS -->
+<div class="arc-stage">
+  <div class="arc-wrap" id="arc-wrap"></div>
+</div>
+
+<!-- RADIO DEVICE -->
+<div class="radio-wrap">
+  <div class="radio" id="radio-device">
+    <!-- Antenna -->
+    <div class="antenna">
+      <div class="ant-dot red" id="ant-red"></div>
+      <div class="ant-dot green" id="ant-green"></div>
+    </div>
+    <div class="radio-label">UNLOCK STUDIO · SOUNDCARD v1.0 ▸</div>
+
+    <!-- Speakers + VU display -->
+    <div class="radio-mid">
+      <div class="speaker"><div class="speaker-inner"></div></div>
+      <div class="vu-display" id="vu-display">
+        <div class="vu-label">SIGNAL</div>
+      </div>
+      <div class="speaker"><div class="speaker-inner"></div></div>
+    </div>
+
+    <!-- Frequency band -->
+    <div class="freq-band">
+      <div class="freq-needle" id="freq-needle"></div>
+      <div class="freq-marks">
+        <span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span><span>FM</span>
+      </div>
+    </div>
+
+    <!-- Card slots -->
+    <div class="card-slots">
+      <div class="card-slot" id="slot-genre">
+        <span class="slot-label">风格 GEN</span>
+        <span class="slot-val" id="sv-genre">—</span>
+        <span class="slot-x" onclick="clearSlot(0)">✕</span>
+      </div>
+      <div class="card-slot" id="slot-mood">
+        <span class="slot-label">情绪 MOOD</span>
+        <span class="slot-val" id="sv-mood">—</span>
+        <span class="slot-x" onclick="clearSlot(1)">✕</span>
+      </div>
+      <div class="card-slot" id="slot-arr">
+        <span class="slot-label">编曲 ARR</span>
+        <span class="slot-val" id="sv-arr">—</span>
+        <span class="slot-x" onclick="clearSlot(2)">✕</span>
+      </div>
+    </div>
+
+    <!-- Options + Generate -->
+    <div class="radio-bottom">
+      <div class="radio-opts">
+        <div class="opt-group">
+          <span class="opt-label">时长</span>
+          <div class="tog-group" data-opt="duration">
+            <button class="tog-btn active" data-v="30s">30s</button>
+            <button class="tog-btn" data-v="60s">60s</button>
+            <button class="tog-btn" data-v="120s">120s</button>
+          </div>
+        </div>
+        <div class="opt-group">
+          <span class="opt-label">模式</span>
+          <div class="tog-group" data-opt="mode">
+            <button class="tog-btn active" data-v="instrumental">纯音乐</button>
+            <button class="tog-btn" data-v="vocal">人声</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-gen" id="btn-gen" disabled>生成 GENERATE</button>
+    </div>
+
+    <div class="radio-footer">UNLOCK STUDIO</div>
+
+    <!-- Loading overlay -->
+    <div class="load-overlay" id="load-overlay">
+      <div class="load-bars" id="load-bars"></div>
+      <div class="load-txt">正在生成 GENERATING...</div>
+      <div class="load-prog"><div class="load-prog-fill" id="load-prog-fill"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LYRICS SECTION (below radio, visible when vocal mode) -->
+<div class="lyrics-outer" id="lyrics-wrap">
+  <div class="lyrics-box">
+    <div class="lyrics-head">
+      <span class="lyrics-label">歌词 LYRICS · 选择「人声」模式后可填写</span>
+      <span class="lyrics-count" id="lyrics-count">0 / 600</span>
+    </div>
+    <textarea class="lyrics-ta" id="lyrics-ta" maxlength="600" placeholder="在此输入歌词 · Write your lyrics here...&#10;&#10;[Verse]&#10;第一段歌词写在这里&#10;&#10;[Chorus]&#10;副歌部分写在这里&#10;&#10;留空则由 AI 自动生成歌词"></textarea>
+    <div class="lyrics-hint">支持 [Verse] [Chorus] [Bridge] [Outro] 等结构标签 · 留空 = AI 自动写词</div>
+  </div>
+</div>
+
+<div class="cat-label" id="cat-label">选择风格 GENRE</div>
+
+<!-- PLAYER -->
+<section class="player-section" id="player-section">
+  <div class="player-box">
+    <div class="player-head">
+      <span class="player-tag">UNLOCK STUDIO · SOUNDCARD v1.0</span>
+      <span class="player-tag">AI GENERATED</span>
+    </div>
+    <div class="wave-box" id="wave-box"></div>
+    <div class="p-controls">
+      <button class="btn-play" id="btn-play" onclick="togglePlay()">
+        <svg id="ico-play" width="14" height="14" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+        <svg id="ico-pause" width="14" height="14" viewBox="0 0 24 24" style="display:none"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+      </button>
+      <div class="p-bar" onclick="seekProg(event)"><div class="p-fill" id="p-fill"></div></div>
+      <div class="p-time" id="p-time">0:00 / 0:00</div>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-label">生成 Prompt</div>
+      <div class="prompt-txt" id="prompt-txt"></div>
+      <button class="prompt-copy" onclick="copyPrompt()">复制 COPY</button>
+    </div>
+    <div class="dl-row">
+      <button class="btn-dl dl-wav" onclick="openPay()">下载商用 WAV<span class="dl-price">¥1.9</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENT MODAL -->
+<div class="pay-overlay" id="pay-overlay" onclick="closePay(event)">
+  <div class="pay-modal">
+    <button class="pay-close" onclick="closePay()">&times;</button>
+    <div class="pay-title">SOUNDCARD</div>
+    <div class="pay-sub">下载商用 WAV 无损音质</div>
+    <div class="pay-price">¥ 1.9</div>
+    <div class="pay-qr" id="pay-qr">
+      <img src="alipay-qr.jpg" alt="支付宝收款码">
+    </div>
+    <div class="pay-hint">打开支付宝扫码支付 ¥1.9<br>支付完成后点击下方按钮</div>
+    <button class="pay-done" onclick="confirmPay()">已完成支付 PAID</button>
+    <div class="pay-note">支付遇到问题？添加微信 Samlockstudio 联系客服</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo"><img src="logo.png" alt="U" style="width:20px;height:20px;border-radius:4px;object-fit:cover"><span class="ft-name">UNLOCK STUDIO</span></div>
+  <div class="ft-copy">© 2026 解锁影像 Free for Creators</div>
+</footer>
+
+<script>
+// ===== DATA =====
+const CARDS = [
+  // Genre
+  [
+    {zh:'电子',en:'Electronic',px:[0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,0,1,1,1,1,1,0]},
+    {zh:'嘻哈',en:'Hip-Hop',px:[0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,1,0,1,1,0,0,0,1,1,1,0,0,0,1,0,1,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1]},
+    {zh:'古典',en:'Classical',px:[0,0,1,1,1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,1,1,1,0,0]},
+    {zh:'流行',en:'Pop',px:[0,0,0,1,0,0,0,0,0,1,1,1,0,0,0,1,0,1,0,1,0,0,1,0,1,0,1,0,0,1,0,1,0,1,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0]},
+    {zh:'摇滚',en:'Rock',px:[0,0,1,0,1,0,0,0,1,0,0,0,1,0,1,1,0,0,0,1,1,1,0,0,1,0,0,1,1,0,0,1,0,0,1,1,0,0,0,1,0,1,0,0,0,1,0,0,0]},
+    {zh:'爵士',en:'Jazz',px:[0,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,1,0,1,0,1,0,0,0,1,1,1,0,0]},
+    {zh:'Lo-Fi',en:'Lo-Fi',px:[0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,0]},
+    {zh:'影视配乐',en:'Cinematic',px:[0,1,1,1,1,1,0,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,1,0,1,1,1,1,1,0]},
+  ],
+  // Mood
+  [
+    {zh:'热血',en:'Energetic',px:[0,0,1,0,1,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0]},
+    {zh:'忧郁',en:'Melancholy',px:[0,0,1,1,1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0]},
+    {zh:'梦幻',en:'Dreamy',px:[1,0,0,0,0,0,1,0,0,1,1,1,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,0,1,0,0,0,1,0,0,0,1,1,1,0,0,1,0,0,0,0,0,1]},
+    {zh:'紧张',en:'Tense',px:[1,1,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0]},
+    {zh:'温暖',en:'Warm',px:[0,0,0,1,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0]},
+    {zh:'史诗',en:'Epic',px:[0,0,0,1,0,0,0,0,0,1,1,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0]},
+    {zh:'轻松',en:'Chill',px:[0,1,1,1,1,1,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,1,0]},
+    {zh:'神秘',en:'Mysterious',px:[0,0,1,1,1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,1,1,1,0,0]},
+  ],
+  // Arrangement
+  [
+    {zh:'钢琴主导',en:'Piano-led',px:[1,1,1,1,1,1,1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,0,0,1,0,0,1]},
+    {zh:'合成器',en:'Synth Pad',px:[0,0,1,1,1,0,0,0,1,0,0,0,1,0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,0,0,1,1,1,0,0]},
+    {zh:'弦乐',en:'Orchestral',px:[0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,0,0,0,1,0,1,0,1,0,1,0,0,1,0,0,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1]},
+    {zh:'吉他',en:'Guitar',px:[0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0]},
+    {zh:'鼓机',en:'Drum Machine',px:[0,1,1,1,1,1,0,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,0,1,1,1,1,1,0]},
+    {zh:'管乐',en:'Brass/Wind',px:[0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,1,0,1,0,0,0,0,1,1,1,1,1,0]},
+    {zh:'电子音色',en:'Electronic',px:[1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,0,1,1,1]},
+    {zh:'混合编曲',en:'Hybrid',px:[1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1]},
+  ]
+];
+
+const CAT_LABELS = ['选择风格 GENRE','选择情绪 MOOD','选择编曲 ARRANGEMENT'];
+const SLOT_IDS = ['slot-genre','slot-mood','slot-arr'];
+const SV_IDS = ['sv-genre','sv-mood','sv-arr'];
+
+// ===== STATE =====
+let curStep = 0;
+const sel = [null, null, null]; // {zh, en} per step
+let opts = { duration:'30s', mode:'instrumental' };
+let playing = false, playProg = 0, playInt = null;
+
+// ===== LYRICS =====
+const lyricsWrap = document.getElementById('lyrics-wrap');
+const lyricsTa = document.getElementById('lyrics-ta');
+const lyricsCount = document.getElementById('lyrics-count');
+lyricsTa.addEventListener('input', () => {
+  lyricsCount.textContent = lyricsTa.value.length + ' / 600';
+});
+function updateLyricsVisibility() {
+  if (opts.mode === 'vocal') {
+    lyricsWrap.classList.add('open');
+    lyricsTa.removeAttribute('disabled');
+  } else {
+    lyricsWrap.classList.remove('open');
+    lyricsTa.setAttribute('disabled', '');
+  }
+}
+
+// ===== ARC LAYOUT =====
+function layoutArc(cards, step) {
+  const wrap = document.getElementById('arc-wrap');
+  const stage = wrap.parentElement;
+  const W = stage.offsetWidth;
+  const n = cards.length;
+
+  // Arc parameters
+  const cardW = Math.min(100, W * 0.12);
+  const cardH = cardW * 0.82;
+  const cx = W / 2;
+  const ry = Math.min(160, W * 0.2);
+  const rx = Math.min(W * 0.48, 400);
+  const startAngle = Math.PI;
+  const endAngle = 0;
+
+  wrap.innerHTML = '';
+  cards.forEach((c, i) => {
+    const t = n === 1 ? 0.5 : i / (n - 1);
+    const angle = startAngle + t * (endAngle - startAngle);
+    const x = cx + rx * Math.cos(angle) - cardW / 2;
+    const y = ry - ry * Math.sin(angle);
+
+    const btn = document.createElement('button');
+    btn.className = 'arc-card' + (sel[step] && sel[step].en === c.en ? ' selected' : '');
+    btn.style.cssText = `left:${x}px;top:${y}px;width:${cardW}px;height:${cardH}px;animation:fadeUp .35s ease-out;animation-delay:${i * 50}ms;animation-fill-mode:backwards`;
+
+    let pxHTML = '<div class="pxicon">';
+    c.px.forEach(p => pxHTML += `<span class="px${p}"></span>`);
+    pxHTML += '</div>';
+
+    btn.innerHTML = `<div class="ac-inner">${pxHTML}<span class="ac-zh">${c.zh}</span><span class="ac-en">${c.en}</span></div>`;
+
+    btn.onclick = () => selectCard(step, c);
+    wrap.appendChild(btn);
+  });
+
+  // Adjust stage height
+  stage.style.height = (ry + cardH + 20) + 'px';
+}
+
+function switchStep(s) {
+  curStep = s;
+  document.querySelectorAll('.step-pill').forEach((p, i) => p.classList.toggle('active', i === s));
+  layoutArc(CARDS[s], s);
+  document.getElementById('cat-label').textContent = CAT_LABELS[s];
+}
+
+function selectCard(step, card) {
+  sel[step] = card;
+  // Update slot
+  const slot = document.getElementById(SLOT_IDS[step]);
+  const sv = document.getElementById(SV_IDS[step]);
+  slot.classList.add('filled');
+  sv.textContent = card.zh;
+  // Re-render arc to show selection
+  layoutArc(CARDS[step], step);
+  updateGenBtn();
+  // Auto-advance
+  if (step < 2) setTimeout(() => switchStep(step + 1), 350);
+}
+
+function clearSlot(step) {
+  sel[step] = null;
+  const slot = document.getElementById(SLOT_IDS[step]);
+  const sv = document.getElementById(SV_IDS[step]);
+  slot.classList.remove('filled');
+  sv.textContent = '—';
+  if (curStep === step) layoutArc(CARDS[step], step);
+  updateGenBtn();
+}
+
+function updateGenBtn() {
+  document.getElementById('btn-gen').disabled = !(sel[0] && sel[1] && sel[2]);
+}
+
+// ===== TOGGLE BUTTONS =====
+document.querySelectorAll('.tog-group').forEach(g => {
+  const opt = g.dataset.opt;
+  g.querySelectorAll('.tog-btn').forEach(b => {
+    b.onclick = () => {
+      g.querySelectorAll('.tog-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      opts[opt] = b.dataset.v;
+      if (opt === 'mode') updateLyricsVisibility();
+    };
+  });
+});
+
+// ===== VU BARS INIT =====
+function initVU() {
+  const vu = document.getElementById('vu-display');
+  const count = Math.floor(vu.offsetWidth / 5);
+  // keep existing label
+  const label = vu.querySelector('.vu-label');
+  vu.innerHTML = '';
+  vu.appendChild(label);
+  for (let i = 0; i < count; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'vu-bar';
+    bar.style.height = (4 + Math.random() * 50 + Math.sin(i * 0.2) * 15) + 'px';
+    vu.appendChild(bar);
+  }
+}
+
+// ===== API CONFIG =====
+const API_BASE = window.SOUNDCARD_API || 'http://localhost:3001';
+let currentSongs = []; // store generated songs
+let currentSongIdx = 0;
+let audioEl = null; // real <audio> element
+
+// ===== GENERATE =====
+document.getElementById('btn-gen').onclick = generate;
+
+async function generate() {
+  if (!sel[0] || !sel[1] || !sel[2]) return;
+  const btn = document.getElementById('btn-gen');
+  const overlay = document.getElementById('load-overlay');
+  const pFill = document.getElementById('load-prog-fill');
+
+  // Setup loading bars
+  const bars = document.getElementById('load-bars');
+  bars.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const b = document.createElement('div');
+    b.className = 'load-bar';
+    b.style.animationDelay = (i * 0.08) + 's';
+    bars.appendChild(b);
+  }
+
+  btn.classList.add('loading');
+  btn.textContent = '生成中 GENERATING...';
+  overlay.classList.add('active');
+  pFill.style.width = '0%';
+
+  // Antenna on
+  document.getElementById('ant-red').classList.add('on');
+  document.getElementById('ant-green').classList.add('on');
+
+  // Freq needle animation
+  const needle = document.getElementById('freq-needle');
+  needle.style.left = (20 + Math.random() * 60) + '%';
+
+  // VU bars animate
+  const vuBars = document.querySelectorAll('#vu-display .vu-bar');
+  const vuInt = setInterval(() => {
+    vuBars.forEach(b => {
+      b.style.height = (4 + Math.random() * 55) + 'px';
+      b.classList.toggle('active', Math.random() > 0.3);
+    });
+  }, 150);
+
+  let prog = 0;
+  const progInt = setInterval(() => {
+    prog += Math.random() * 3 + 1;
+    if (prog >= 90) prog = 90;
+    pFill.style.width = prog + '%';
+  }, 1000);
+
+  try {
+    // Build prompt from selections
+    const mTxt = opts.mode === 'instrumental' ? 'Instrumental' : 'Vocal';
+    const promptStr = `${sel[0].en} ${sel[1].en} ${sel[2].en}, ${mTxt}, professional production`;
+    const lyrics = document.getElementById('lyrics-ta') ? document.getElementById('lyrics-ta').value.trim() : '';
+
+    // Call API
+    const genResp = await fetch(`${API_BASE}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: promptStr,
+        lyrics: lyrics || undefined,
+        instrumental: opts.mode === 'instrumental',
+        tags: `${sel[0].en}, ${sel[1].en}, ${sel[2].en}`,
+      }),
+    });
+    const genData = await genResp.json();
+
+    if (genData.error) throw new Error(genData.error);
+
+    // Poll for completion
+    const taskId = genData.task_id;
+    let result = null;
+    for (let i = 0; i < 60; i++) { // max 2 min polling
+      await new Promise(r => setTimeout(r, 3000));
+      const statusResp = await fetch(`${API_BASE}/api/status/${taskId}`);
+      const statusData = await statusResp.json();
+
+      if (statusData.status === 'success' && statusData.songs && statusData.songs.length > 0) {
+        result = statusData;
+        break;
+      } else if (statusData.status === 'failed') {
+        throw new Error('生成失败，请重试');
+      }
+      // Update progress
+      prog = Math.min(90, prog + 2);
+      pFill.style.width = prog + '%';
+    }
+
+    if (!result) throw new Error('生成超时，请重试');
+
+    // Success!
+    currentSongs = result.songs;
+    currentSongIdx = 0;
+
+    clearInterval(progInt);
+    clearInterval(vuInt);
+    pFill.style.width = '100%';
+    vuBars.forEach(b => { b.classList.remove('active'); b.style.height = (4 + Math.random() * 20) + 'px'; });
+
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      btn.classList.remove('loading');
+      btn.textContent = '重新生成 REGEN';
+      document.getElementById('ant-red').classList.remove('on');
+      showPlayer();
+    }, 400);
+
+  } catch (err) {
+    clearInterval(progInt);
+    clearInterval(vuInt);
+    overlay.classList.remove('active');
+    btn.classList.remove('loading');
+    btn.textContent = '生成音乐 GENERATE';
+    document.getElementById('ant-red').classList.remove('on');
+    document.getElementById('ant-green').classList.remove('on');
+    vuBars.forEach(b => { b.classList.remove('active'); });
+    alert('生成出错: ' + err.message);
+  }
+}
+
+// ===== PLAYER =====
+function showPlayer() {
+  const sec = document.getElementById('player-section');
+  sec.classList.add('visible');
+  sec.scrollIntoView({ behavior:'smooth', block:'center' });
+
+  const song = currentSongs[currentSongIdx];
+
+  // Prompt / tags
+  const mTxt = opts.mode === 'instrumental' ? 'Instrumental' : 'Vocal';
+  let prompt = song.tags || `${sel[0].en} ${sel[1].en} ${sel[2].en}, ${mTxt}`;
+  if (song.title) prompt = `♪ ${song.title}\n${prompt}`;
+  document.getElementById('prompt-txt').textContent = prompt;
+
+  // Create real audio element
+  if (audioEl) { audioEl.pause(); audioEl.remove(); }
+  audioEl = new Audio(song.audio_url);
+  audioEl.crossOrigin = 'anonymous';
+
+  // Waveform
+  buildWave();
+
+  // Time - use real duration from API
+  const total = song.duration || parseInt(opts.duration);
+  document.getElementById('p-time').textContent = `0:00 / ${fmtTime(total)}`;
+  playing = false; playProg = 0;
+  document.getElementById('p-fill').style.width = '0%';
+  document.getElementById('ico-play').style.display = '';
+  document.getElementById('ico-pause').style.display = 'none';
+  if (playInt) clearInterval(playInt);
+
+  // Show song selector if multiple songs
+  const songInfo = document.getElementById('song-info');
+  if (!songInfo) {
+    const si = document.createElement('div');
+    si.id = 'song-info';
+    si.style.cssText = 'text-align:center;font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:8px;letter-spacing:.08em';
+    sec.querySelector('.player-box').prepend(si);
+  }
+  const infoEl = document.getElementById('song-info');
+  if (currentSongs.length > 1) {
+    infoEl.innerHTML = currentSongs.map((s, i) =>
+      `<span style="cursor:pointer;padding:4px 10px;border:1px solid ${i === currentSongIdx ? 'var(--neon)' : 'rgba(200,240,58,.15)'};color:${i === currentSongIdx ? 'var(--neon)' : 'var(--dim)'};border-radius:3px;margin:0 4px" onclick="switchSong(${i})">${s.title || ('Track ' + (i+1))}</span>`
+    ).join('');
+  } else {
+    infoEl.textContent = song.title || '';
+  }
+
+  // Audio events for real playback
+  audioEl.addEventListener('timeupdate', () => {
+    if (!audioEl.duration) return;
+    const pct = (audioEl.currentTime / audioEl.duration) * 100;
+    document.getElementById('p-fill').style.width = pct + '%';
+    document.getElementById('p-time').textContent = `${fmtTime(audioEl.currentTime)} / ${fmtTime(audioEl.duration)}`;
+    const bars = document.querySelectorAll('.wave-b');
+    const ai = Math.floor((audioEl.currentTime / audioEl.duration) * bars.length);
+    bars.forEach((b, i) => b.classList.toggle('on', i <= ai));
+  });
+  audioEl.addEventListener('ended', () => {
+    playing = false;
+    document.getElementById('ico-play').style.display = '';
+    document.getElementById('ico-pause').style.display = 'none';
+    document.getElementById('ant-green').classList.remove('on');
+  });
+}
+
+function switchSong(idx) {
+  currentSongIdx = idx;
+  showPlayer();
+}
+
+function buildWave() {
+  const box = document.getElementById('wave-box');
+  box.innerHTML = '';
+  const n = Math.min(Math.floor(box.offsetWidth / 5), 100);
+  for (let i = 0; i < n; i++) {
+    const b = document.createElement('div');
+    b.className = 'wave-b';
+    b.style.height = Math.max(3, 6 + Math.random() * 46 + Math.sin(i * 0.15) * 12) + 'px';
+    box.appendChild(b);
+  }
+}
+
+function togglePlay() {
+  if (!audioEl) return;
+  playing = !playing;
+  document.getElementById('ico-play').style.display = playing ? 'none' : '';
+  document.getElementById('ico-pause').style.display = playing ? '' : 'none';
+  document.getElementById('ant-green').classList.toggle('on', playing);
+
+  if (playing) {
+    audioEl.play();
+  } else {
+    audioEl.pause();
+  }
+}
+
+function seekProg(e) {
+  if (!audioEl || !audioEl.duration) return;
+  const bar = e.currentTarget;
+  const pct = Math.max(0, Math.min(1, (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth));
+  audioEl.currentTime = pct * audioEl.duration;
+}
+
+function fmtTime(s) { return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+function copyPrompt() {
+  navigator.clipboard.writeText(document.getElementById('prompt-txt').textContent);
+  const b = document.querySelector('.prompt-copy');
+  b.textContent = '已复制 ✓';
+  setTimeout(() => b.textContent = '复制 COPY', 1500);
+}
+
+// ===== PAYMENT MODAL =====
+function openPay() {
+  document.getElementById('pay-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePay(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('pay-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function confirmPay() {
+  // After user confirms payment, download the actual MP3
+  document.getElementById('pay-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (currentSongs.length > 0) {
+    const song = currentSongs[currentSongIdx];
+    const a = document.createElement('a');
+    a.href = song.audio_url;
+    a.download = `soundcard-${song.title || 'track'}.mp3`;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+}
+
+// ===== INIT =====
+window.addEventListener('load', () => { switchStep(0); initVU(); });
+window.addEventListener('resize', () => { layoutArc(CARDS[curStep], curStep); initVU(); });
+</script>
+</body>
+</html>

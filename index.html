@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNLOCK STUDIO 解锁影像 — AI Creative Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* SKELETON - will fill sections via Edit */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0e0e0d;--neon:#C8F03A;--txt:#F5F4EF;
+  --dim:rgba(200,198,188,.65);--dim2:rgba(200,198,188,.45);
+  --card-bg:rgba(200,240,58,.03);--card-border:rgba(200,240,58,.12);
+  --mono:'Share Tech Mono',monospace;--pixel:'Press Start 2P',monospace;--sans:'Space Grotesk',sans-serif;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(14,14,13,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,240,58,.06)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--txt)}
+.nav-logo img{height:28px;width:auto;border-radius:4px;background:#111}
+.nav-brand{display:flex;flex-direction:column}
+.n1{font-family:var(--mono);font-size:11px;letter-spacing:.2em;font-weight:700}
+.n2{font-family:var(--sans);font-size:8.5px;letter-spacing:.14em;color:var(--dim);margin-top:1px}
+.nav-links{display:flex;align-items:center;gap:20px}
+.nav-links a{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--neon)}
+.nav-pill{padding:5px 14px;border:1px solid var(--neon);color:var(--neon)!important;border-radius:3px;transition:all .2s!important}
+.nav-pill:hover{background:var(--neon)!important;color:#0e0e0d!important}
+@media(max-width:640px){.nav-links{gap:10px}.nav-links a{font-size:9px}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 24px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:50%;left:50%;width:600px;height:600px;background:radial-gradient(circle,rgba(200,240,58,.04) 0%,transparent 70%);transform:translate(-50%,-50%);pointer-events:none}
+.hero-badge{font-size:9px;font-family:var(--mono);color:var(--dim);letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-family:var(--pixel);font-size:clamp(1.4rem,5vw,2.4rem);color:var(--neon);letter-spacing:.04em;line-height:1.1;text-align:center;text-shadow:0 0 40px rgba(200,240,58,.25);margin-bottom:12px}
+.hero-sub{font-family:var(--sans);font-size:clamp(14px,2.5vw,18px);color:var(--txt);font-weight:400;text-align:center;max-width:560px;line-height:1.6;margin-bottom:8px;letter-spacing:.02em}
+.hero-desc{font-size:13px;color:rgba(210,208,198,.65);text-align:center;max-width:480px;line-height:1.7;letter-spacing:.04em;margin-bottom:48px}
+.hero-grid-label{font-size:8px;font-family:var(--mono);color:var(--dim2);letter-spacing:.2em;margin-bottom:20px}
+
+/* PRODUCT CARDS */
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:960px;width:100%;padding:0 20px}
+.prod-card{position:relative;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);padding:32px 28px 28px;cursor:pointer;transition:all .35s cubic-bezier(.23,1,.32,1);overflow:hidden;text-decoration:none;color:var(--txt);display:flex;flex-direction:column}
+.prod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--neon);opacity:0;transition:opacity .3s}
+.prod-card:hover{border-color:rgba(200,240,58,.4);background:rgba(200,240,58,.06);transform:translateY(-4px)}
+.prod-card:hover::before{opacity:1}
+.prod-card:hover .prod-icon{transform:scale(1.08)}
+.prod-num{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:9px;color:var(--dim2);letter-spacing:.1em}
+.prod-icon{width:56px;height:56px;margin-bottom:16px;transition:transform .3s;display:flex;align-items:center;justify-content:center}
+.prod-icon svg{width:48px;height:48px}
+.prod-tag{font-family:var(--mono);font-size:8px;letter-spacing:.16em;color:var(--neon);text-transform:uppercase;margin-bottom:6px;opacity:.8}
+.prod-name{font-family:var(--sans);font-size:20px;font-weight:600;letter-spacing:.01em;margin-bottom:4px}
+.prod-name-cn{font-family:var(--sans);font-size:14px;color:rgba(220,218,208,.7);margin-bottom:12px;letter-spacing:.06em}
+.prod-desc{font-size:13px;color:rgba(210,208,198,.65);line-height:1.65;letter-spacing:.03em;flex:1}
+.prod-cta{display:inline-flex;align-items:center;gap:6px;margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--neon);opacity:.7;transition:opacity .2s}
+.prod-card:hover .prod-cta{opacity:1}
+.prod-cta::after{content:'→';transition:transform .2s}
+.prod-card:hover .prod-cta::after{transform:translateX(3px)}
+
+/* STATUS BAR */
+.status-bar{display:flex;align-items:center;gap:24px;margin-top:48px;padding:10px 24px;border:1px solid rgba(200,240,58,.08);border-radius:4px;background:rgba(200,240,58,.02)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.status-txt{font-size:9px;color:var(--dim);letter-spacing:.12em}
+.status-txt span{color:var(--neon)}
+
+/* PORTFOLIO STRIP */
+.portfolio{padding:80px 32px;text-align:center}
+.portfolio-label{font-size:8px;font-family:var(--mono);color:var(--dim2);letter-spacing:.2em;margin-bottom:12px}
+.portfolio-title{font-family:var(--sans);font-size:clamp(18px,3vw,26px);font-weight:600;margin-bottom:8px}
+.portfolio-sub{font-size:13px;color:rgba(210,208,198,.6);letter-spacing:.06em;margin-bottom:36px}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;max-width:960px;margin:0 auto 32px}
+.case-card{position:relative;overflow:hidden;border-radius:8px;border:1px solid rgba(200,240,58,.06);aspect-ratio:16/9;cursor:pointer;transition:all .4s cubic-bezier(.22,1,.36,1)}
+.case-card:hover{border-color:rgba(200,240,58,.25);transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.case-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.case-card:hover img{transform:scale(1.03)}
+.case-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(14,14,13,.88) 0%,rgba(14,14,13,.2) 40%,transparent 70%);display:flex;flex-direction:column;justify-content:flex-end;padding:16px}
+.case-brand{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.case-tag{display:inline-flex;font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--neon);padding:2px 6px;background:rgba(200,240,58,.1);border-radius:3px;width:fit-content;margin-bottom:4px}
+.case-desc{font-size:11px;color:var(--dim);line-height:1.5}
+.portfolio-cta{display:inline-block;padding:10px 28px;border:1px solid var(--card-border);border-radius:4px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--dim);text-decoration:none;transition:all .25s}
+.portfolio-cta:hover{border-color:var(--neon);color:var(--neon);background:rgba(200,240,58,.04)}
+
+/* COMMUNITY */
+.community{padding:60px 32px 80px;text-align:center;border-top:1px solid rgba(200,240,58,.06)}
+.comm-label{font-size:8px;font-family:var(--mono);color:var(--dim2);letter-spacing:.2em;margin-bottom:12px}
+.comm-title{font-family:var(--sans);font-size:clamp(16px,3vw,22px);font-weight:600;margin-bottom:8px}
+.comm-sub{font-size:13px;color:rgba(210,208,198,.65);letter-spacing:.06em;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.7}
+.comm-qr{width:160px;height:160px;border-radius:12px;border:1px solid rgba(200,240,58,.15);margin:0 auto 16px;overflow:hidden;background:#fff}
+.comm-qr img{width:100%;height:100%;object-fit:cover}
+.comm-wechat{font-family:var(--mono);font-size:11px;color:var(--neon);letter-spacing:.1em}
+
+/* FOOTER */
+footer{padding:24px 32px;border-top:1px solid rgba(200,240,58,.04);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+footer span{font-size:9px;color:var(--dim2);letter-spacing:.1em}
+footer a{font-size:9px;color:var(--dim2);letter-spacing:.1em;text-decoration:none}
+footer a:hover{color:var(--neon)}
+
+/* GRID BACKGROUND */
+.grid-bg{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(200,240,58,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(200,240,58,.015) 1px,transparent 1px);
+  background-size:80px 80px}
+
+/* SCAN LINE */
+.scanline{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px)}
+
+main{position:relative;z-index:2}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <img src="cases/logo_0.png" alt="U">
+    <div class="nav-brand">
+      <span class="n1">UNLOCK STUDIO</span>
+      <span class="n2">解 锁 影 像</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#products">产品 PRODUCTS</a>
+    <a href="pricing.html">报价 PRICING</a>
+    <a href="#community">社群 COMMUNITY</a>
+    <a href="#community" class="nav-pill">免费加入 JOIN</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-badge">AI CREATIVE STUDIO · EST. 2024</div>
+    <h1 class="hero-title">UNLOCK STUDIO</h1>
+    <p class="hero-sub">AI 原生创意工作室</p>
+    <p class="hero-desc">导演级审美 × AI 级效率。<br>我们为品牌制作 AI 广告，为创作者打造免费 AI 工具。</p>
+    <div class="hero-grid-label">// OUR PRODUCTS</div>
+
+    <div class="products" id="products">
+      <a class="prod-card" href="stylecard.html">
+        <span class="prod-num">01</span>
+        <div class="prod-icon"><svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="34" height="26" rx="2" stroke="#C8F03A" stroke-width="2"/><rect x="8" y="8" width="26" height="18" fill="#C8F03A" opacity=".12"/><rect x="12" y="13" width="4" height="4" fill="#C8F03A"/><rect x="19" y="13" width="4" height="4" fill="#C8F03A"/><rect x="26" y="13" width="4" height="4" fill="#C8F03A"/><line x1="15" y1="30" x2="27" y2="30" stroke="#C8F03A" stroke-width="2"/><line x1="21" y1="30" x2="21" y2="36" stroke="#C8F03A" stroke-width="2"/><line x1="14" y1="36" x2="28" y2="36" stroke="#C8F03A" stroke-width="2"/></svg></div>
+        <div class="prod-tag">AI PROMPT TOOL</div>
+        <div class="prod-name">StyleCard</div>
+        <div class="prod-name-cn">插卡生成影像提示词</div>
+        <div class="prod-desc">3 张卡片选择品类、影调、运动，一键生成专业级 AI 视频/图片提示词。288 种风格组合，复制即用。</div>
+        <span class="prod-cta">开始使用 USE NOW</span>
+      </a>
+
+      <a class="prod-card" href="soundcard.html">
+        <span class="prod-num">02</span>
+        <div class="prod-icon"><svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="21" y1="2" x2="21" y2="8" stroke="#C8F03A" stroke-width="2"/><line x1="24" y1="3" x2="28" y2="7" stroke="#C8F03A" stroke-width="2"/><rect x="4" y="10" width="34" height="28" rx="3" stroke="#C8F03A" stroke-width="2"/><rect x="4" y="10" width="34" height="28" rx="3" fill="#C8F03A" opacity=".07"/><circle cx="14" cy="27" r="6" stroke="#C8F03A" stroke-width="2"/><circle cx="14" cy="27" r="2" fill="#C8F03A"/><circle cx="28" cy="27" r="6" stroke="#C8F03A" stroke-width="2"/><circle cx="28" cy="27" r="2" fill="#C8F03A"/><line x1="8" y1="16" x2="34" y2="16" stroke="#C8F03A" stroke-width="1.5" opacity=".4"/><rect x="10" y="12" width="8" height="2" fill="#C8F03A" opacity=".5"/></svg></div>
+        <div class="prod-tag">AI MUSIC GENERATION</div>
+        <div class="prod-name">SoundCard</div>
+        <div class="prod-name-cn">插卡生成你的音乐</div>
+        <div class="prod-desc">选择风格、情绪、编曲，AI 实时生成原创音乐。支持纯音乐和人声模式，即生成即下载。</div>
+        <span class="prod-cta">开始使用 USE NOW</span>
+      </a>
+
+      <a class="prod-card" href="legal.html">
+        <span class="prod-num">03</span>
+        <div class="prod-icon"><svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="21" y1="4" x2="21" y2="28" stroke="#C8F03A" stroke-width="2"/><line x1="8" y1="14" x2="34" y2="14" stroke="#C8F03A" stroke-width="2"/><path d="M8 14 L4 24 L12 24 Z" stroke="#C8F03A" stroke-width="1.5" fill="#C8F03A" opacity=".15"/><path d="M34 14 L30 24 L38 24 Z" stroke="#C8F03A" stroke-width="1.5" fill="#C8F03A" opacity=".15"/><circle cx="8" cy="14" r="2" fill="#C8F03A"/><circle cx="34" cy="14" r="2" fill="#C8F03A"/><circle cx="21" cy="4" r="2.5" stroke="#C8F03A" stroke-width="1.5" fill="#C8F03A" opacity=".3"/><rect x="14" y="34" width="14" height="3" rx="1" stroke="#C8F03A" stroke-width="1.5"/><line x1="21" y1="28" x2="21" y2="34" stroke="#C8F03A" stroke-width="2"/></svg></div>
+        <div class="prod-tag">PUBLIC INTEREST</div>
+        <div class="prod-name">WHO TM</div>
+        <div class="prod-name-cn">管管这帮人 · 公益维权</div>
+        <div class="prod-desc">Freelancer 劳务维权自助工具。AI 梳理你的情况，提供免费合同模板和催款话术。</div>
+        <span class="prod-cta">免费使用 FREE</span>
+      </a>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span class="status-txt">ALL SYSTEMS <span>ONLINE</span> · STYLECARD v1.0 · SOUNDCARD v1.0 · WHO TM v1.0</span>
+    </div>
+  </section>
+
+  <section class="portfolio">
+    <div class="portfolio-label">// PORTFOLIO · 精选案例</div>
+    <h2 class="portfolio-title">为全球品牌制作 AI 广告</h2>
+    <p class="portfolio-sub">Honda · Xiaomi · Buick · Leap Motor · F1 · 水卫士</p>
+    <div class="case-grid">
+      <div class="case-card">
+        <img src="cases/page_6.jpg" alt="水卫士 × 王一博" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 艺人参考拍摄</span>
+          <div class="case-brand">水卫士 × 王一博</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_8.jpg" alt="HONDA HR-V" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">100% AI · 零实拍</span>
+          <div class="case-brand">HONDA HR-V</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_10.jpg" alt="Xiaomi" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">100% AI · 零实拍</span>
+          <div class="case-brand">Xiaomi</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_7.jpg" alt="BUICK L7" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 少量参考拍摄</span>
+          <div class="case-brand">BUICK L7 × 高铁</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_13.jpg" alt="LEAP MOTOR" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 少量参考拍摄</span>
+          <div class="case-brand">LEAP MOTOR 零跑</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_9.jpg" alt="F1 雨夜魔都" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">100% AI</span>
+          <div class="case-brand">F1 雨夜魔都</div>
+        </div>
+      </div>
+    </div>
+    <a class="portfolio-cta" href="pricing.html">查看报价和案例 VIEW PRICING →</a>
+  </section>
+
+  <section class="community" id="community">
+    <div class="comm-label">// COMMUNITY</div>
+    <h2 class="comm-title">和创作者一起进化</h2>
+    <p class="comm-sub">工具免费，社群免费。导演、制片、创意人共同打磨 AI 工作流。<br>扫码加微信备注「解锁影像」</p>
+    <div class="comm-qr"><img src="cases/wechat-qr.jpg" alt="WeChat QR Code"></div>
+    <div class="comm-wechat">Samlockstudio</div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 解锁影像 Free for Creators</span>
+  <span>UNLOCK STUDIO · PORTAL v1.0</span>
+</footer>
+</body>
+</html>

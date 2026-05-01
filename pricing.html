@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报价体系 — UNLOCK STUDIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* --- RESET & BASE --- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1A1A18;--bg2:#222220;--bg3:#2a2a27;
+  --lime:#C8F03A;--lime-dim:#687A27;--lime-glow:rgba(200,240,58,.12);
+  --white:#f0f0ec;--grey:#9a9a90;--dark-text:#3a3a35;
+  --radius:6px;--radius-lg:10px;
+  --font:'Space Grotesk',sans-serif;--mono:'Share Tech Mono',monospace;
+}
+html{scroll-behavior:smooth;background:var(--bg);color:var(--white);font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden;background:var(--bg)}
+a{color:inherit;text-decoration:none}
+
+/* --- NOISE OVERLAY --- */
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+}
+
+/* --- SCANLINE ACCENT --- */
+body::after{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-index:9998;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(200,240,58,.008) 2px,rgba(200,240,58,.008) 4px);
+}
+
+/* --- CONTAINER --- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* --- HEADER --- */
+.header{padding:48px 0 32px;text-align:center;position:relative}
+.header::after{
+  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--lime),transparent);
+}
+.logo-mark{
+  font-family:var(--mono);font-size:11px;letter-spacing:6px;text-transform:uppercase;
+  color:var(--lime);margin-bottom:12px;opacity:0;animation:fadeUp .8s .2s forwards;
+}
+.logo-name{
+  font-size:clamp(28px,6vw,48px);font-weight:700;letter-spacing:2px;
+  color:var(--white);line-height:1.1;
+  opacity:0;animation:fadeUp .8s .35s forwards;
+}
+.logo-name span{color:var(--lime)}
+.tagline{
+  font-family:var(--mono);font-size:clamp(10px,2.2vw,13px);letter-spacing:3px;
+  color:var(--grey);margin-top:16px;text-transform:uppercase;
+  opacity:0;animation:fadeUp .8s .5s forwards;
+}
+
+/* --- CATEGORY TABS --- */
+.tabs{
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+  padding:48px 0 40px;position:sticky;top:0;z-index:100;
+  background:linear-gradient(180deg,var(--bg) 70%,transparent);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.tab{
+  font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  padding:10px 24px;border:1px solid var(--lime-dim);border-radius:var(--radius);
+  color:var(--grey);cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+  background:transparent;
+}
+.tab::before{
+  content:'';position:absolute;inset:0;background:var(--lime);opacity:0;transition:opacity .3s;z-index:-1;
+}
+.tab:hover{color:var(--white);border-color:var(--lime)}
+.tab.active{color:var(--bg);border-color:var(--lime);font-weight:600}
+.tab.active::before{opacity:1}
+
+/* --- SECTION --- */
+.section{padding:0 0 80px;display:none}
+.section.active{display:block}
+.section-head{
+  text-align:center;margin-bottom:48px;
+  opacity:0;transform:translateY(20px);transition:all .6s;
+}
+.section-head.visible{opacity:1;transform:translateY(0)}
+.section-num{font-family:var(--mono);font-size:64px;font-weight:700;color:var(--lime-glow);line-height:1}
+.section-title{font-size:clamp(22px,4vw,32px);font-weight:700;margin-top:-20px;position:relative}
+.section-title em{font-style:normal;color:var(--lime)}
+.section-sub{font-family:var(--mono);font-size:12px;color:var(--grey);letter-spacing:2px;margin-top:8px;text-transform:uppercase}
+
+/* --- TIER CARDS --- */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start}
+
+.card{
+  background:var(--bg2);border:1px solid rgba(200,240,58,.08);border-radius:var(--radius-lg);
+  padding:32px 28px;position:relative;overflow:hidden;
+  transition:all .4s cubic-bezier(.22,1,.36,1);
+  opacity:0;transform:translateY(30px);
+}
+.card.visible{opacity:1;transform:translateY(0)}
+.card:hover{border-color:rgba(200,240,58,.25);transform:translateY(-4px)!important;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+
+/* S-tier premium glow */
+.card.tier-s{border-color:rgba(200,240,58,.3);background:linear-gradient(170deg,var(--bg3) 0%,var(--bg2) 100%)}
+.card.tier-s::before{
+  content:'';position:absolute;top:-1px;left:20%;right:20%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--lime),transparent);
+}
+.card.tier-s::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:120px;
+  background:linear-gradient(180deg,rgba(200,240,58,.04),transparent);pointer-events:none;
+}
+
+.card-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 12px;border-radius:4px;margin-bottom:16px;
+}
+.tier-s .card-badge{background:var(--lime);color:var(--bg);font-weight:600}
+.tier-a .card-badge{background:rgba(200,240,58,.15);color:var(--lime)}
+.tier-b .card-badge{background:rgba(255,255,255,.06);color:var(--grey)}
+
+.card-title{font-size:20px;font-weight:600;margin-bottom:4px}
+.card-title-en{font-family:var(--mono);font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:20px}
+
+.card-price{
+  font-size:clamp(24px,4vw,32px);font-weight:700;color:var(--lime);
+  margin-bottom:4px;line-height:1.2;
+}
+.card-price-unit{font-family:var(--mono);font-size:12px;color:var(--grey);margin-bottom:24px;letter-spacing:1px}
+
+.card-divider{height:1px;background:linear-gradient(90deg,var(--lime-dim),transparent);margin-bottom:20px;opacity:.4}
+
+.card-features{list-style:none;margin-bottom:24px}
+.card-features li{
+  font-size:14px;color:var(--white);padding:6px 0 6px 20px;position:relative;
+  opacity:.85;line-height:1.5;
+}
+.card-features li::before{
+  content:'›';position:absolute;left:0;color:var(--lime);font-weight:700;font-size:16px;
+}
+
+.card-usecase{
+  font-size:12px;color:var(--grey);padding:12px 16px;
+  background:rgba(255,255,255,.03);border-radius:var(--radius);
+  border-left:2px solid var(--lime-dim);
+}
+.card-usecase strong{color:var(--lime);font-weight:500}
+
+/* --- LOGO IMG --- */
+.logo-img{
+  width:56px;height:56px;border-radius:12px;margin-bottom:16px;
+  opacity:0;animation:fadeUp .8s .15s forwards;
+}
+
+/* --- PORTFOLIO --- */
+.portfolio{padding:80px 0 48px;border-top:1px solid rgba(200,240,58,.08)}
+.portfolio-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:4px;
+  color:var(--lime);text-transform:uppercase;margin-bottom:8px;text-align:center;
+}
+.portfolio-title{font-size:clamp(20px,4vw,28px);font-weight:600;margin-bottom:40px;text-align:center}
+.portfolio-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;
+}
+.case-card{
+  position:relative;overflow:hidden;border-radius:var(--radius-lg);
+  border:1px solid rgba(200,240,58,.06);
+  aspect-ratio:16/9;cursor:pointer;
+  transition:all .4s cubic-bezier(.22,1,.36,1);
+}
+.case-card:hover{border-color:rgba(200,240,58,.25);transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.case-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.case-card:hover img{transform:scale(1.03)}
+.case-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(26,26,24,.92) 0%,rgba(26,26,24,.3) 40%,transparent 70%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:20px;
+  transition:opacity .3s;
+}
+.case-brand{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
+.case-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--lime);padding:3px 8px;background:rgba(200,240,58,.1);border-radius:3px;
+  width:fit-content;margin-bottom:6px;
+}
+.case-desc{font-size:12px;color:var(--grey);line-height:1.5}
+
+/* --- CONTACT --- */
+.contact{
+  text-align:center;padding:80px 0 48px;
+  border-top:1px solid rgba(200,240,58,.08);
+}
+.contact-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:4px;
+  color:var(--lime);text-transform:uppercase;margin-bottom:16px;
+}
+.contact-title{font-size:clamp(20px,4vw,28px);font-weight:600;margin-bottom:8px}
+.contact-desc{color:var(--grey);font-size:14px;margin-bottom:32px;line-height:1.7}
+.contact-wechat{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:16px 32px;border:1px solid var(--lime);border-radius:var(--radius);
+  font-family:var(--mono);font-size:14px;color:var(--lime);letter-spacing:2px;
+  transition:all .3s;
+}
+.contact-wechat:hover{background:var(--lime);color:var(--bg)}
+.contact-wechat svg{width:20px;height:20px;fill:currentColor}
+
+/* --- FOOTER --- */
+.footer{
+  text-align:center;padding:32px 0;
+  font-family:var(--mono);font-size:11px;color:rgba(154,154,144,.5);letter-spacing:1px;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* --- RESPONSIVE --- */
+@media(max-width:768px){
+  .wrap{padding:0 16px}
+  .header{padding:36px 0 24px}
+  .tabs{padding:36px 0 28px;gap:6px}
+  .tab{padding:8px 16px;font-size:11px}
+  .tiers{grid-template-columns:1fr;gap:16px}
+  .card{padding:24px 20px}
+  .section{padding:0 0 48px}
+  .contact{padding:48px 0 32px}
+  .portfolio-grid{grid-template-columns:1fr}
+}
+@media(max-width:380px){
+  .tab{padding:7px 12px;font-size:10px;letter-spacing:1px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- NAV -->
+  <div style="display:flex;justify-content:flex-end;gap:16px;padding:16px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:1px">
+    <a href="index.html" style="color:var(--grey);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#f0f0ec'" onmouseout="this.style.color='#9a9a90'">首页 HOME</a>
+    <a href="stylecard.html" style="color:var(--grey);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#f0f0ec'" onmouseout="this.style.color='#9a9a90'">StyleCard</a>
+    <a href="soundcard.html" style="color:var(--grey);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#f0f0ec'" onmouseout="this.style.color='#9a9a90'">SoundCard</a>
+    <a href="legal.html" style="color:var(--grey);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#f0f0ec'" onmouseout="this.style.color='#9a9a90'">维权 WHO TM</a>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <a href="index.html" style="text-decoration:none;color:inherit">
+      <img src="cases/logo_0.png" alt="UNLOCK STUDIO" class="logo-img">
+      <h1 class="logo-name"><span>UNLOCK</span> STUDIO</h1>
+    </a>
+    <p class="tagline">导演驱动的AI影像厂牌 · Director-Led AI Filmmaking</p>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-cat="tvc">AI TVC 商业广告</button>
+    <button class="tab" data-cat="social">企业AI内容年度定制</button>
+  </nav>
+
+  <!-- AI TVC -->
+  <section class="section active" id="sec-tvc">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <h2 class="section-title">AI TVC 商业广告 / <em>Commercial</em></h2>
+      <p class="section-sub">Full-Service · Strategy to Screen</p>
+    </div>
+    <div class="tiers">
+      <div class="card tier-s" data-delay="0">
+        <span class="card-badge">S 级</span>
+        <h3 class="card-title">全案制作</h3>
+        <p class="card-title-en">Full Campaign</p>
+        <div class="card-price">¥150,000 – 500,000<span style="font-size:18px;opacity:.6">+</span></div>
+        <div class="card-price-unit">/ 项目 Per Project</div>
+        <div class="card-divider"></div>
+        <ul class="card-features">
+          <li>资深导演全程操盘，从策略到成片</li>
+          <li>AI原生全流程制作（部分项目辅以少量参考拍摄）</li>
+          <li>导演级审美把控 × AI级生产效率</li>
+        </ul>
+        <div class="card-usecase"><strong>适用 ›</strong> 央视/卫视级TVC、品牌年度大片</div>
+      </div>
+      <div class="card tier-a" data-delay="1">
+        <span class="card-badge">A 级</span>
+        <h3 class="card-title">精品广告</h3>
+        <p class="card-title-en">Premium Ad</p>
+        <div class="card-price">¥50,000 – 150,000</div>
+        <div class="card-price-unit">/ 项目 Per Project</div>
+        <div class="card-divider"></div>
+        <ul class="card-features">
+          <li>导演执导 + 创意脚本定制</li>
+          <li>AI主导制作，导演级品质交付</li>
+        </ul>
+        <div class="card-usecase"><strong>适用 ›</strong> 线上品牌广告、产品广告</div>
+      </div>
+      <div class="card tier-b" data-delay="2">
+        <span class="card-badge">B 级</span>
+        <h3 class="card-title">轻量广告</h3>
+        <p class="card-title-en">Lite Ad</p>
+        <div class="card-price">¥20,000 – 50,000</div>
+        <div class="card-price-unit">/ 项目 Per Project</div>
+        <div class="card-divider"></div>
+        <ul class="card-features">
+          <li>AI高效制作，导演品控</li>
+          <li>专业审美，轻量预算</li>
+        </ul>
+        <div class="card-usecase"><strong>适用 ›</strong> 电商广告、信息流素材</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI CONTENT SERVICE -->
+  <section class="section" id="sec-social">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <h2 class="section-title">企业AI内容年度定制 / <em>AI Content Service</em></h2>
+      <p class="section-sub">Enterprise · Full AI Creative Retainer</p>
+    </div>
+    <div class="tiers">
+      <div class="card tier-s" data-delay="0">
+        <span class="card-badge">S 级</span>
+        <h3 class="card-title">年度战略合作</h3>
+        <p class="card-title-en">Annual Partnership</p>
+        <div class="card-price">¥200,000 – 300,000</div>
+        <div class="card-price-unit">/ 月 Per Month · 年付享专属权益</div>
+        <div class="card-divider"></div>
+        <ul class="card-features">
+          <li>年度AI内容战略规划</li>
+          <li>10–15条AI视频/月</li>
+          <li>配套AI海报 + 平面设计 + 社媒物料</li>
+          <li>专属创意团队 + 月度数据复盘</li>
+          <li>优先排期 + 7×12响应</li>
+        </ul>
+        <div class="card-usecase"><strong>适用 ›</strong> 品牌年度内容合作、全平台AI内容输出</div>
+      </div>
+      <div class="card tier-a" data-delay="1">
+        <span class="card-badge">A 级</span>
+        <h3 class="card-title">季度内容服务</h3>
+        <p class="card-title-en">Quarterly Retainer</p>
+        <div class="card-price">¥100,000 – 200,000</div>
+        <div class="card-price-unit">/ 月 Per Month · 季度起签</div>
+        <div class="card-divider"></div>
+        <ul class="card-features">
+          <li>8–12条AI视频/月</li>
+          <li>配套AI海报 + 平面物料</li>
+          <li>内容策略 + 执行全包</li>
+          <li>数据复盘 + 迭代优化</li>
+        </ul>
+        <div class="card-usecase"><strong>适用 ›</strong> 品牌阶段性内容需求、新品上市周期</div>
+      </div>
+      <div class="card tier-b" data-delay="2">
+        <span class="card-badge">B 级</span>
+        <h3 class="card-title">月度基础服务</h3>
+        <p class="card-title-en">Monthly Starter</p>
+        <div class="card-price">¥50,000 – 100,000</div>
+        <div class="card-price-unit">/ 月 Per Month</div>
+        <div class="card-divider"></div>
+        <ul class="card-features">
+          <li>4–8条AI视频/月</li>
+          <li>基础AI海报 + 平面物料</li>
+          <li>适合初次合作试水</li>
+        </ul>
+        <div class="card-usecase"><strong>适用 ›</strong> 中型品牌月度内容、初次AI内容合作</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <div class="portfolio">
+    <p class="portfolio-label">[ Portfolio ]</p>
+    <h2 class="portfolio-title">精选案例</h2>
+    <div class="portfolio-grid">
+      <div class="case-card">
+        <img src="cases/page_6.jpg" alt="水卫士 × 王一博" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 艺人参考拍摄</span>
+          <div class="case-brand">水卫士 × 王一博</div>
+          <p class="case-desc">全AI视效制作，仅艺人素材取自实拍</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_8.jpg" alt="HONDA AI TVC" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">100% AI · 零实拍</span>
+          <div class="case-brand">HONDA HR-V</div>
+          <p class="case-desc">100% AI生成汽车TVC，零实拍</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_10.jpg" alt="Xiaomi AI Film" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">100% AI · 零实拍</span>
+          <div class="case-brand">Xiaomi</div>
+          <p class="case-desc">AI概念影片，全生成式制作</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_7.jpg" alt="BUICK L7" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 少量参考拍摄</span>
+          <div class="case-brand">BUICK L7 × 高铁</div>
+          <p class="case-desc">AI全场景重建，少量艺人素材参考</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_13.jpg" alt="LEAP MOTOR" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 少量参考拍摄</span>
+          <div class="case-brand">LEAP MOTOR 零跑</div>
+          <p class="case-desc">国内最早AI主导汽车TVC</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_9.jpg" alt="F1 雨夜魔都" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">100% AI</span>
+          <div class="case-brand">F1 雨夜魔都</div>
+          <p class="case-desc">AI电影短片，F1赛事影像实验</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_14.jpg" alt="BUICK AI Film" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 少量参考拍摄</span>
+          <div class="case-brand">BUICK</div>
+          <p class="case-desc">AI生成全环境，少量素材参考</p>
+        </div>
+      </div>
+      <div class="case-card">
+        <img src="cases/page_15.jpg" alt="Jetour AI Film" loading="lazy">
+        <div class="case-overlay">
+          <span class="case-tag">AI主导 · 实验影片</span>
+          <div class="case-brand">Jetour 捷途</div>
+          <p class="case-desc">AI驱动世界构建，实验性电影短片</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact">
+    <p class="contact-label">[ Contact ]</p>
+    <h2 class="contact-title">联系我们</h2>
+    <p class="contact-desc">每个项目都是独特的，我们更愿意聊一聊再报价<br>Every project is unique — let's talk first.</p>
+    <a class="contact-wechat" href="#">
+      <svg viewBox="0 0 24 24"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05a6.28 6.28 0 0 1-.273-1.834c0-3.695 3.46-6.693 7.73-6.693.26 0 .514.013.768.037C16.86 4.966 13.059 2.188 8.691 2.188zm-2.6 4.26c-.588 0-1.065-.476-1.065-1.065 0-.588.477-1.064 1.065-1.064.589 0 1.065.476 1.065 1.064 0 .59-.476 1.065-1.065 1.065zm5.71 0c-.588 0-1.065-.476-1.065-1.065 0-.588.477-1.064 1.065-1.064.589 0 1.065.476 1.065 1.064 0 .59-.476 1.065-1.065 1.065zm4.158 2.57c-3.837 0-6.95 2.708-6.95 6.048 0 3.342 3.113 6.05 6.95 6.05.67 0 1.326-.08 1.96-.27a.86.86 0 0 1 .553.063l1.378.806a.262.262 0 0 0 .136.045.234.234 0 0 0 .236-.234c0-.06-.023-.117-.039-.174l-.28-1.07a.587.587 0 0 1 .164-.513C22.882 18.537 24 16.738 24 14.703v-.635c-.267-3.073-3.281-5.05-7.04-5.05zm-2.565 3.634c.472 0 .855.383.855.855 0 .472-.383.855-.855.855a.856.856 0 0 1-.855-.855c0-.472.383-.855.855-.855zm5.13 0c.472 0 .855.383.855.855 0 .472-.383.855-.855.855a.856.856 0 0 1-.855-.855c0-.472.383-.855.855-.855z"/></svg>
+      BBOYLOCK
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    © 2025 UNLOCK STUDIO · 报价仅供参考，实际费用根据项目需求面议
+  </footer>
+
+</div>
+
+<script>
+/* --- Tab Switching --- */
+const tabs = document.querySelectorAll('.tab');
+const sections = document.querySelectorAll('.section');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const cat = tab.dataset.cat;
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    sections.forEach(s => {
+      s.classList.remove('active');
+      if (s.id === 'sec-' + cat) {
+        s.classList.add('active');
+        animateSection(s);
+      }
+    });
+  });
+});
+
+/* --- Scroll / Appear Animation --- */
+function animateSection(section) {
+  const head = section.querySelector('.section-head');
+  const cards = section.querySelectorAll('.card');
+
+  // Reset
+  if (head) { head.classList.remove('visible'); }
+  cards.forEach(c => { c.classList.remove('visible'); c.style.transitionDelay = '0s'; });
+
+  // Trigger
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (head) head.classList.add('visible');
+      cards.forEach((c, i) => {
+        c.style.transitionDelay = (0.15 + i * 0.12) + 's';
+        c.classList.add('visible');
+      });
+    });
+  });
+}
+
+// Initial animation
+animateSection(document.querySelector('.section.active'));
+
+/* --- Intersection Observer for contact section --- */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.contact, .footer').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'all .6s ease';
+  observer.observe(el);
+});
+
+/* Portfolio cards animation */
+const caseObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.case-card').forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = `all .5s ${i * 0.08}s ease`;
+  caseObserver.observe(el);
+});
+</script>
+</body>
+</html>

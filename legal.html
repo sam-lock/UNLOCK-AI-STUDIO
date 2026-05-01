@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>WHO TM 管管这帮人</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Press+Start+2P&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+--bg:#1A1A18;--bg2:#222220;--bg3:#2a2a28;--bg4:#333331;--bg5:#3a3a38;
+--lime:#C8F03A;--lime-dim:rgba(200,240,58,.15);--lime-dim2:rgba(200,240,58,.06);--lime-border:rgba(200,240,58,.35);--lime-glow:rgba(200,240,58,.25);
+--w:#F5F4EF;--w7:rgba(245,244,239,.7);--w4:rgba(245,244,239,.4);--w2:rgba(245,244,239,.15);--w1:rgba(245,244,239,.06);
+--red:#e85d5d;--green:#4ecb8d;--orange:#f0a050;
+--r:10px;--rs:6px;
+--font:'Space Grotesk','Noto Sans SC',sans-serif;
+--pixel:'Press Start 2P',monospace;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#111;font-family:var(--font);color:var(--w)}
+.phone{position:relative;width:375px;height:812px;margin:0 auto;overflow:hidden;background:var(--bg);border:1px solid var(--w1)}
+@media(max-width:420px){.phone{width:100vw;height:100vh;height:100dvh;border:none}}
+
+/* SCREENS */
+.scr{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.scr.active{display:flex}
+.scr-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scr-scroll::-webkit-scrollbar{display:none}
+
+/* PIXEL LOGO - middle finger */
+.pxfinger{display:inline-grid;grid-template-columns:repeat(11,5px);grid-template-rows:repeat(17,5px);gap:1px}
+.pxfinger span{width:5px;height:5px;background:transparent;border-radius:1px}
+.pxfinger span.f{background:var(--lime)}
+.pxfinger span.d{background:rgba(200,240,58,.35)}
+.pxfinger span.s{background:rgba(200,240,58,.15)}
+/* small version for footer */
+.pxfinger-sm{grid-template-columns:repeat(11,3px);grid-template-rows:repeat(17,3px);gap:1px}
+.pxfinger-sm span{width:3px;height:3px}
+
+/* SCANLINE */
+.scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:2}
+
+/* === LANDING === */
+.land-hero{padding:52px 24px 28px;text-align:center}
+.land-hero .hero-title{font-family:'Space Grotesk',sans-serif;font-size:42px;font-weight:700;color:var(--w);line-height:1.1;letter-spacing:-1px;margin-bottom:2px}
+.land-hero .hero-title em{font-style:normal;color:var(--lime)}
+.land-hero .hero-sub-title{font-family:'Noto Sans SC',sans-serif;font-size:22px;font-weight:700;color:var(--w);letter-spacing:4px;margin-bottom:8px}
+.land-hero .hero-tag{font-family:var(--pixel);font-size:7px;color:var(--lime);letter-spacing:2px;margin-bottom:6px;opacity:.7}
+.land-hero .sub{font-size:13px;color:var(--w4);margin-top:10px;line-height:1.7}
+
+/* UL LOGO */
+.ul-badge{display:inline-block;width:24px;height:24px;border-radius:5px;background:var(--lime);position:relative;vertical-align:middle}
+.ul-badge svg{position:absolute;inset:3px;width:18px;height:18px}
+.ul-badge-sm{width:18px;height:18px;border-radius:4px}
+.ul-badge-sm svg{inset:2px;width:14px;height:14px}
+
+/* SEARCH BOX */
+.search-wrap{padding:0 24px;margin:8px 0 28px}
+.search-box{width:100%;background:var(--bg3);border:1.5px solid var(--w2);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.2s}
+.search-box:hover,.search-box:active{border-color:var(--lime-border);box-shadow:0 0 20px var(--lime-dim2)}
+.search-box .placeholder{font-size:13px;color:var(--w4);flex:1}
+.search-box .go{font-family:var(--pixel);font-size:8px;color:var(--lime);white-space:nowrap}
+
+/* SECTION */
+.land-section{padding:0 24px;margin-bottom:28px}
+.sec-head{font-family:var(--pixel);font-size:8px;color:var(--lime);margin-bottom:14px;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.sec-head::before{content:'>';font-size:10px}
+
+/* PAIN CARDS */
+.pain-card{background:var(--bg2);border:1px solid var(--w1);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.pain-card .pain-tag{font-family:var(--pixel);font-size:6px;color:var(--red);margin-bottom:6px;letter-spacing:.5px}
+.pain-card .pain-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.pain-card .pain-desc{font-size:12px;color:var(--w4);line-height:1.6}
+
+/* CAN / CANNOT */
+.verdict-grid{display:flex;flex-direction:column;gap:8px}
+.verdict-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--rs);font-size:12px;line-height:1.6}
+.verdict-item.can{background:rgba(78,203,141,.06);border:1px solid rgba(78,203,141,.2);color:var(--green)}
+.verdict-item.cant{background:rgba(232,93,93,.06);border:1px solid rgba(232,93,93,.15);color:var(--red)}
+.verdict-item.maybe{background:rgba(240,160,80,.06);border:1px solid rgba(240,160,80,.15);color:var(--orange)}
+.verdict-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.verdict-text{color:var(--w7)}
+.verdict-text b{color:inherit}
+
+/* CTA */
+.cta-section{padding:0 24px 40px;text-align:center}
+.cta-btn{width:100%;padding:16px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;letter-spacing:.5px;transition:.15s}
+.cta-btn:active{transform:scale(.97)}
+.cta-footnote{font-size:10px;color:var(--w2);margin-top:12px;line-height:1.6}
+
+/* === CHAT SCREEN === */
+.chat-hdr{padding:50px 20px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--w1);flex-shrink:0}
+.chat-back{width:32px;height:32px;border-radius:var(--rs);background:var(--bg3);border:1px solid var(--w1);color:var(--w7);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font)}
+.chat-title{font-family:var(--pixel);font-size:8px;color:var(--lime)}
+
+.chat-body{flex:1;overflow-y:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px}
+.chat-body::-webkit-scrollbar{display:none}
+
+/* MESSAGES */
+.msg{max-width:85%;padding:12px 14px;border-radius:var(--r);font-size:13px;line-height:1.7;animation:msg-in .3s ease}
+.msg-ai{background:var(--bg3);border:1px solid var(--w1);color:var(--w7);align-self:flex-start;border-bottom-left-radius:2px}
+.msg-user{background:var(--lime-dim);border:1px solid var(--lime-border);color:var(--w);align-self:flex-end;border-bottom-right-radius:2px}
+@keyframes msg-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* OPTIONS */
+.msg-options{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.msg-opt{padding:8px 14px;border-radius:20px;border:1px solid var(--w2);font-size:12px;color:var(--w7);cursor:pointer;transition:.15s;font-family:var(--font);background:transparent}
+.msg-opt:hover{border-color:var(--lime-border);color:var(--lime)}
+.msg-opt:active{background:var(--lime);color:var(--bg);border-color:var(--lime)}
+.msg-opt.selected{background:var(--lime);color:var(--bg);border-color:var(--lime);pointer-events:none}
+
+/* INPUT AREA */
+.chat-input-wrap{padding:12px 20px 32px;border-top:1px solid var(--w1);flex-shrink:0;display:flex;gap:8px;background:var(--bg)}
+.chat-input{flex:1;padding:12px 14px;background:var(--bg3);border:1.5px solid var(--w2);border-radius:var(--r);color:var(--w);font-size:14px;font-family:var(--font);outline:none}
+.chat-input:focus{border-color:var(--lime-border)}
+.chat-input::placeholder{color:var(--w2)}
+.chat-send{width:44px;height:44px;border-radius:var(--r);background:var(--lime);border:none;color:var(--bg);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+.chat-send:active{transform:scale(.95)}
+.chat-input-wrap.hidden{display:none}
+
+/* TYPING INDICATOR */
+.typing{display:flex;gap:4px;padding:12px 14px;align-self:flex-start}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--w2);animation:typing-dot 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes typing-dot{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+/* === CHECKLIST SCREEN === */
+.cl-hdr{padding:50px 20px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--w1);flex-shrink:0}
+.cl-body{flex:1;overflow-y:auto;padding:16px 20px 40px}
+.cl-body::-webkit-scrollbar{display:none}
+
+.cl-summary{background:var(--bg2);border:1px solid var(--lime-border);border-radius:var(--r);padding:18px;margin-bottom:16px;box-shadow:0 0 20px var(--lime-dim2)}
+.cl-amount{font-family:var(--pixel);font-size:22px;color:var(--lime);text-align:center;margin:8px 0}
+.cl-amount-label{font-size:12px;color:var(--w4);text-align:center}
+
+.cl-group{margin-bottom:20px}
+.cl-group-title{font-family:var(--pixel);font-size:7px;color:var(--lime);margin-bottom:10px;letter-spacing:.5px}
+.cl-group-title::before{content:'> '}
+.cl-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--w1);border-radius:var(--rs);margin-bottom:6px;cursor:pointer;transition:.15s}
+.cl-item:active{background:var(--bg3)}
+.cl-check{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--w2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:.15s;margin-top:1px}
+.cl-item.done .cl-check{border-color:var(--lime);background:var(--lime);color:var(--bg)}
+.cl-item-text{font-size:13px;color:var(--w7);line-height:1.5}
+.cl-item-sub{font-size:11px;color:var(--w4);margin-top:2px}
+
+.cl-doc{background:var(--bg2);border:1px solid var(--w1);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.cl-doc-header{padding:12px 14px;border-bottom:1px solid var(--w1);display:flex;justify-content:space-between;align-items:center}
+.cl-doc-title{font-size:13px;font-weight:600}
+.cl-doc-action{font-family:var(--pixel);font-size:7px;color:var(--lime);cursor:pointer}
+.cl-doc-body{padding:14px;font-size:12px;color:var(--w4);line-height:2;max-height:200px;overflow-y:auto}
+
+.cl-tip{padding:12px 14px;background:var(--lime-dim2);border:1px solid var(--lime-border);border-radius:var(--rs);font-size:12px;color:rgba(200,240,58,.8);line-height:1.6;margin-bottom:12px}
+
+.cl-export-btn{width:100%;padding:14px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--r);font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;margin-bottom:8px}
+.cl-export-btn:active{transform:scale(.98)}
+.cl-outline-btn{width:100%;padding:14px;background:transparent;border:1.5px solid var(--lime-border);color:var(--lime);border-radius:var(--r);font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer}
+
+/* LOCATION CARD */
+.loc-card{background:var(--bg2);border:1px solid var(--lime-border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.loc-title{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.loc-addr{font-size:12px;color:var(--w4);line-height:1.6;margin-bottom:10px}
+.loc-map-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--bg4);border:1px solid var(--w2);border-radius:var(--rs);font-size:12px;color:var(--lime);cursor:pointer;text-decoration:none;font-family:var(--font);transition:.15s}
+.loc-map-btn:hover{border-color:var(--lime-border)}
+
+/* TIPS SECTION */
+.tips-card{background:var(--bg2);border:1px solid var(--w1);border-radius:var(--r);padding:14px 16px;margin-bottom:8px}
+.tips-card .tip-num{font-family:var(--pixel);font-size:7px;color:var(--lime);margin-bottom:6px}
+.tips-card .tip-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.tips-card .tip-body{font-size:12px;color:var(--w4);line-height:1.7}
+.tips-card .tip-body b{color:var(--w7)}
+.tips-card .tip-warn{margin-top:6px;padding:6px 10px;background:rgba(232,93,93,.06);border:1px solid rgba(232,93,93,.12);border-radius:4px;font-size:11px;color:var(--red);line-height:1.5}
+
+/* TEMPLATE PACK CARDS */
+.tpl-card{background:var(--bg2);border:1px solid var(--w1);border-radius:var(--r);padding:16px;margin-bottom:12px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.tpl-card:active{background:var(--bg3)}
+.tpl-card.featured{border-color:var(--lime-border);box-shadow:0 0 20px var(--lime-dim2)}
+.tpl-badge{position:absolute;top:12px;right:12px;font-family:var(--pixel);font-size:6px;padding:4px 8px;border-radius:3px;letter-spacing:.5px}
+.tpl-badge.free{background:var(--lime);color:var(--bg)}
+.tpl-badge.paid{background:var(--bg4);color:var(--orange);border:1px solid rgba(240,160,80,.3)}
+.tpl-badge.hot{background:rgba(232,93,93,.15);color:var(--red);border:1px solid rgba(232,93,93,.2)}
+.tpl-icon{font-size:28px;margin-bottom:8px}
+.tpl-title{font-size:15px;font-weight:700;margin-bottom:4px;padding-right:60px}
+.tpl-desc{font-size:12px;color:var(--w4);line-height:1.6;margin-bottom:10px}
+.tpl-includes{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.tpl-tag{padding:3px 8px;border-radius:3px;background:var(--w1);font-size:10px;color:var(--w4)}
+.tpl-price{font-family:var(--pixel);font-size:10px;color:var(--lime)}
+.tpl-price .original{text-decoration:line-through;color:var(--w2);font-family:var(--font);font-size:11px;margin-left:6px}
+
+/* TEMPLATE DETAIL SCREEN */
+.tpl-detail-hero{padding:24px;background:var(--bg2);border-bottom:1px solid var(--w1)}
+.tpl-detail-body{padding:20px 24px 40px}
+.tpl-file-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg2);border:1px solid var(--w1);border-radius:var(--rs);margin-bottom:8px}
+.tpl-file-icon{width:36px;height:36px;border-radius:6px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.tpl-file-info{flex:1}
+.tpl-file-name{font-size:13px;font-weight:600}
+.tpl-file-desc{font-size:11px;color:var(--w4);margin-top:2px}
+.tpl-buy-btn{width:100%;padding:16px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:16px}
+.tpl-buy-btn:active{transform:scale(.98)}
+.tpl-buy-btn.free-btn{background:var(--bg3);color:var(--lime);border:1.5px solid var(--lime-border)}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+<div class="scanline"></div>
+
+<!-- ====== LANDING ====== -->
+<div class="scr active" id="landing">
+<div class="scr-scroll">
+
+<div class="land-hero">
+  <!-- 11x17 pixel middle finger -->
+  <div class="pxfinger" style="margin-bottom:20px">
+    <span></span><span></span><span></span><span></span><span class="s"></span><span class="d"></span><span class="s"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="d"></span><span class="f"></span><span class="d"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span><span></span>
+    <span></span><span class="d"></span><span class="f"></span><span class="d"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="d"></span><span class="f"></span><span class="d"></span><span></span>
+    <span></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span>
+    <span></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span>
+    <span></span><span class="d"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="d"></span><span></span>
+    <span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span>
+    <span></span><span></span><span class="d"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="d"></span><span></span><span></span>
+    <span></span><span></span><span></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span class="d"></span><span class="f"></span><span class="f"></span><span class="f"></span><span class="d"></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span class="s"></span><span class="d"></span><span class="f"></span><span class="d"></span><span class="s"></span><span></span><span></span><span></span>
+  </div>
+  <div class="hero-tag">// PUBLIC INTEREST PROJECT</div>
+  <div class="hero-title"><em>WHO TM</em></div>
+  <div class="hero-sub-title">管管这帮人</div>
+  <div style="font-size:12px;color:var(--w4);letter-spacing:3px;margin-top:2px">公 益 维 权 项 目</div>
+  <p class="sub">Freelancer劳务维权自助工具<br>没合同也能要回你的钱</p>
+</div>
+
+<!-- SEARCH BOX -->
+<div class="search-wrap">
+  <div class="search-box" onclick="startChat()">
+    <div class="placeholder">输入你的情况，AI帮你梳理...</div>
+    <div class="go">GO ></div>
+  </div>
+</div>
+
+<!-- PAIN POINTS -->
+<div class="land-section">
+  <div class="sec-head">FREELANCER 行业痛点</div>
+  <div class="pain-card">
+    <div class="pain-tag">// 代理商跑路</div>
+    <div class="pain-title">客户付了钱，代理商和制作公司闹掰</div>
+    <div class="pain-desc">制作公司没收到钱付不了你，你干了活却只拿到50%。钱卡在中间，上下游互相推。</div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-tag">// 甲方耍赖</div>
+    <div class="pain-title">独立制片收了钱，骗你说没到账</div>
+    <div class="pain-desc">你信了，等了一年又一年。最后问了代理商才知道——钱早就给了，你被骗了整整两年。</div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-tag">// 公司倒闭</div>
+    <div class="pain-title">公司直接跑路，人间蒸发</div>
+    <div class="pain-desc">项目交付了，款还没结，公司宣布倒闭。你连找谁要钱都不知道。</div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-tag">// 口头承诺</div>
+    <div class="pain-title">微信谈好的价格，做完了不认账</div>
+    <div class="pain-desc">没签合同，只有微信聊天记录。对方说"再等等"，一等就是半年。你不好意思催，催了也没用。</div>
+  </div>
+</div>
+
+<!-- WHAT CAN / CANNOT -->
+<div class="land-section">
+  <div class="sec-head">哪些钱能要回来</div>
+  <div class="verdict-grid">
+    <div class="verdict-item can"><span class="verdict-icon">&#10003;</span><div class="verdict-text"><b>有微信聊天记录确认合作和金额</b><br>聊天记录是合法证据，胜率很高</div></div>
+    <div class="verdict-item can"><span class="verdict-icon">&#10003;</span><div class="verdict-text"><b>有转账记录（收到过部分款项）</b><br>能证明合作关系和欠款事实</div></div>
+    <div class="verdict-item can"><span class="verdict-icon">&#10003;</span><div class="verdict-text"><b>有交付物（成片、设计稿、工作文件）</b><br>证明你已完成工作</div></div>
+    <div class="verdict-item can"><span class="verdict-icon">&#10003;</span><div class="verdict-text"><b>对方公司还在运营</b><br>可仲裁+强制执行，冻结账户</div></div>
+    <div class="verdict-item maybe"><span class="verdict-icon">?</span><div class="verdict-text"><b>对方公司已倒闭但有关联公司</b><br>可能通过股东追责，需要看具体情况</div></div>
+    <div class="verdict-item maybe"><span class="verdict-icon">?</span><div class="verdict-text"><b>只有口头约定，没有任何文字记录</b><br>难度较大，但如有证人或交付物仍有机会</div></div>
+    <div class="verdict-item cant"><span class="verdict-icon">&#10007;</span><div class="verdict-text"><b>对方公司已注销且无可执行财产</b><br>赢了官司也拿不到钱，但可以上失信名单</div></div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="land-section">
+  <div class="sec-head">YOU ARE NOT ALONE</div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <div style="flex:1;background:var(--bg2);border:1px solid var(--w1);border-radius:var(--r);padding:16px;text-align:center">
+      <div style="font-family:var(--pixel);font-size:16px;color:var(--lime)">76%</div>
+      <div style="font-size:11px;color:var(--w4);margin-top:6px">Freelancer遭遇过欠款</div>
+    </div>
+    <div style="flex:1;background:var(--bg2);border:1px solid var(--w1);border-radius:var(--r);padding:16px;text-align:center">
+      <div style="font-family:var(--pixel);font-size:16px;color:var(--lime)">FREE</div>
+      <div style="font-size:11px;color:var(--w4);margin-top:6px">劳动仲裁不收费</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTRACT TEMPLATES -->
+<div class="land-section">
+  <div class="sec-head">FREELANCER 合同模板库</div>
+  <div style="font-size:12px;color:var(--w4);margin-bottom:14px;line-height:1.6">下次接活之前，先把合同签了。<br>别再让"信任"变成你的损失。</div>
+
+  <div class="tpl-card featured" onclick="showTplDetail(0)">
+    <div class="tpl-badge free">FREE</div>
+    <div class="tpl-icon">📄</div>
+    <div class="tpl-title">Freelancer 基础合同模板</div>
+    <div class="tpl-desc">最简单的劳务合同，微信谈完直接发给对方签字。一页纸搞定，但关键条款都有。</div>
+    <div class="tpl-includes">
+      <span class="tpl-tag">劳务合同</span>
+      <span class="tpl-tag">中英双语</span>
+      <span class="tpl-tag">Word格式</span>
+    </div>
+    <div class="tpl-price">免费下载</div>
+  </div>
+
+  <div class="tpl-card" onclick="showTplDetail(1)">
+    <div class="tpl-badge hot">HOT</div>
+    <div class="tpl-icon">📦</div>
+    <div class="tpl-title">影视广告 Freelancer 全套合同包</div>
+    <div class="tpl-desc">导演、摄影师、剪辑师、制片专用。包含报价单、合同、确认函、验收单、催款函，从谈价到收款的完整文件链。</div>
+    <div class="tpl-includes">
+      <span class="tpl-tag">报价单模板</span>
+      <span class="tpl-tag">劳务合同</span>
+      <span class="tpl-tag">项目确认函</span>
+      <span class="tpl-tag">验收确认单</span>
+      <span class="tpl-tag">催款函</span>
+      <span class="tpl-tag">谈价话术指南</span>
+    </div>
+    <div class="tpl-price">¥49 <span class="original">¥99</span></div>
+  </div>
+
+  <div class="tpl-card" onclick="showTplDetail(2)">
+    <div class="tpl-badge paid">PRO</div>
+    <div class="tpl-icon">🛡</div>
+    <div class="tpl-title">设计师 / 插画师 防坑合同包</div>
+    <div class="tpl-desc">含版权归属条款、修改次数限制、预付款比例约定。专门解决"做完了不认账"和"无限改稿"。</div>
+    <div class="tpl-includes">
+      <span class="tpl-tag">设计委托合同</span>
+      <span class="tpl-tag">版权转让协议</span>
+      <span class="tpl-tag">报价单</span>
+      <span class="tpl-tag">修改确认单</span>
+      <span class="tpl-tag">维权指南</span>
+    </div>
+    <div class="tpl-price">¥39 <span class="original">¥79</span></div>
+  </div>
+
+  <div class="tpl-card" onclick="showTplDetail(3)">
+    <div class="tpl-badge paid">PRO</div>
+    <div class="tpl-icon">🎵</div>
+    <div class="tpl-title">音乐人 / 编曲 合同包</div>
+    <div class="tpl-desc">音乐制作、编曲、混音委托合同。含版权买断/授权两种方案，使用范围约定明确。</div>
+    <div class="tpl-includes">
+      <span class="tpl-tag">音乐制作合同</span>
+      <span class="tpl-tag">版权授权书</span>
+      <span class="tpl-tag">报价模板</span>
+    </div>
+    <div class="tpl-price">¥39 <span class="original">¥79</span></div>
+  </div>
+
+  <div class="tpl-card" onclick="showTplDetail(4)">
+    <div class="tpl-badge paid">FULL</div>
+    <div class="tpl-icon">💼</div>
+    <div class="tpl-title">Freelancer 生存全套 Pro Pack</div>
+    <div class="tpl-desc">以上所有合同 + 谈价策略指南 + 催款话术模板 + 接活避坑清单 + 发票开具指南。一次买齐，再也不吃亏。</div>
+    <div class="tpl-includes">
+      <span class="tpl-tag">全部合同模板</span>
+      <span class="tpl-tag">谈价指南</span>
+      <span class="tpl-tag">催款话术</span>
+      <span class="tpl-tag">避坑清单</span>
+      <span class="tpl-tag">发票指南</span>
+      <span class="tpl-tag">持续更新</span>
+    </div>
+    <div class="tpl-price">¥99 <span class="original">¥299</span></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <button class="cta-btn" onclick="startChat()">开始梳理我的情况</button>
+  <div class="cta-footnote">免费工具 / 不收取任何费用 / 你的信息不会被分享</div>
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--w1);display:flex;flex-direction:column;align-items:center;gap:12px">
+    <!-- Unlock Studio Logo -->
+    <a href="https://www.unlockaistudio.com" target="_blank" rel="noopener" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <div class="ul-badge">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M7 6h4v14a5 5 0 01-10 0V6h4v14a1 1 0 002 0V6z" fill="#1A1A18" opacity=".9"/><path d="M5 6h2v14a3 3 0 006 0V6h2v14a5 5 0 01-10 0V6z" fill="#F5F4EF"/><path d="M3 6h4v14a5 5 0 005 5 5 5 0 005-5V6h4v14a9 9 0 01-18 0V6z" fill="#1A1A18" opacity=".15"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--w7);letter-spacing:4px">UNLOCK</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:300;color:var(--w4);letter-spacing:6px">STUDIO</div>
+      </div>
+    </a>
+    <div style="font-size:9px;color:var(--w2);letter-spacing:1px">解锁影像 出品 / 公益维权项目</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ====== CHAT ====== -->
+<div class="scr" id="chatScreen">
+  <div class="chat-hdr">
+    <button class="chat-back" onclick="showScr('landing')">←</button>
+    <div class="chat-title">WHO TM 管管这帮人</div>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-input-wrap hidden" id="chatInputWrap">
+    <input class="chat-input" id="chatInput" placeholder="输入内容..." onkeydown="if(event.key==='Enter')sendInput()">
+    <button class="chat-send" onclick="sendInput()">→</button>
+  </div>
+</div>
+
+<!-- ====== CHECKLIST ====== -->
+<div class="scr" id="checklistScreen">
+  <div class="cl-hdr">
+    <button class="chat-back" onclick="showScr('chatScreen')">←</button>
+    <div style="font-family:var(--pixel);font-size:8px;color:var(--lime)">YOUR CHECKLIST</div>
+  </div>
+  <div class="cl-body" id="clBody"></div>
+</div>
+
+<!-- ====== TEMPLATE DETAIL ====== -->
+<div class="scr" id="tplDetailScreen">
+  <div class="cl-hdr">
+    <button class="chat-back" onclick="showScr('landing')">←</button>
+    <div style="font-family:var(--pixel);font-size:8px;color:var(--lime)">TEMPLATE PACK</div>
+  </div>
+  <div class="scr-scroll" id="tplDetailBody"></div>
+</div>
+
+</div>
+
+<script>
+/* === STATE === */
+let caseData = {};
+let chatStep = 0;
+
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* === CHAT FLOW === */
+const steps = [
+  {q:'你好，我是 WHO TM 管管这帮人 AI助手。\n\n先告诉我，你是做什么工作的？',type:'options',key:'profession',
+   opts:['导演/摄影','剪辑/后期','设计/插画','编剧/文案','制片/统筹','摄影助理/灯光','独立音乐人','其他Freelancer']},
+  {q:'你在哪个城市？\n（用于确定管辖的仲裁委）',type:'input',key:'city',placeholder:'比如：上海、北京、深圳...'},
+  {q:'谁欠你钱？选一个最接近的情况：',type:'options',key:'situation',
+   opts:['制作公司/工作室欠我劳务费','代理商/广告公司欠我','独立制片人/个人欠我','甲方品牌直接欠我','公司倒闭了还欠我钱']},
+  {q:'欠你多少钱？',type:'input',key:'amount',placeholder:'输入金额，比如：50000'},
+  {q:'拖欠多久了？',type:'options',key:'duration',
+   opts:['1-3个月','3-6个月','6-12个月','1-2年','2年以上']},
+  {q:'你们之间有什么约定方式？',type:'options',key:'agreement',multi:true,
+   opts:['签了正式合同/协议','有微信/邮件确认金额和内容','口头约定，无文字记录','有报价单/对账单','有Purchase Order']},
+  {q:'你手头有哪些材料？\n（多选，这些都是有用的证据）',type:'options',key:'evidence',multi:true,
+   opts:['微信聊天记录','邮件往来','转账/收款记录','已交付的工作成果','合同/协议','报价单/对账单','发票','对方公司工商信息','录音/录像','证人']},
+  {q:'对方现在是什么状态？',type:'options',key:'opponentStatus',
+   opts:['公司还在正常运营','公司还在但换了法人/地址','公司已倒闭/注销','不确定，没查过','是个人，不是公司']},
+  {q:'你之前有催过款吗？怎么催的？',type:'options',key:'chased',multi:true,
+   opts:['微信催过，有记录','电话催过','当面谈过','发过律师函','没催过，不好意思催','催了但对方一直拖']},
+  {q:'最后一个问题——\n简单描述一下具体情况，比如什么项目、什么时候做的、钱怎么谈的：',type:'input',key:'description',placeholder:'比如：2024年3月给XX公司拍了一条广告片，谈好的价格8万，做完了只付了4万，剩下的一直说下个月...'}
+];
+
+function startChat(){
+  showScr('chatScreen');
+  caseData={};chatStep=0;
+  document.getElementById('chatBody').innerHTML='';
+  document.getElementById('chatInputWrap').classList.add('hidden');
+  setTimeout(()=>askStep(),500);
+}
+
+function askStep(){
+  if(chatStep>=steps.length){finishChat();return}
+  let s=steps[chatStep];
+  showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    let html=`<div class="msg msg-ai"><div style="white-space:pre-line">${s.q}</div>`;
+    if(s.type==='options'){
+      html+=`<div class="msg-options" data-key="${s.key}" data-multi="${s.multi||false}">`;
+      s.opts.forEach(o=>{html+=`<button class="msg-opt" onclick="pickOpt(this,'${s.key}',\`${o}\`,${s.multi||false})">${o}</button>`});
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+    appendMsg(html);
+    if(s.type==='input'){
+      let wrap=document.getElementById('chatInputWrap');
+      wrap.classList.remove('hidden');
+      let inp=document.getElementById('chatInput');
+      inp.placeholder=s.placeholder||'输入内容...';
+      inp.dataset.key=s.key;
+      inp.value='';
+      inp.focus();
+    }
+  },800);
+}
+
+function pickOpt(el,key,val,multi){
+  if(multi){
+    el.classList.toggle('selected');
+    if(!caseData[key])caseData[key]=[];
+    let i=caseData[key].indexOf(val);
+    if(i>=0)caseData[key].splice(i,1);else caseData[key].push(val);
+    // add confirm button if not exists
+    let wrap=el.parentElement;
+    if(!wrap.querySelector('.multi-confirm')){
+      let btn=document.createElement('button');
+      btn.className='msg-opt';btn.style.cssText='background:var(--lime);color:var(--bg);border-color:var(--lime);width:100%;margin-top:4px';
+      btn.textContent='确认选择';btn.classList.add('multi-confirm');
+      btn.onclick=function(){
+        wrap.querySelectorAll('.msg-opt').forEach(b=>b.style.pointerEvents='none');
+        let selected=caseData[key]||[];
+        appendMsg(`<div class="msg msg-user">${selected.join('、')}</div>`);
+        chatStep++;setTimeout(()=>askStep(),400);
+      };
+      wrap.appendChild(btn);
+    }
+  }else{
+    el.parentElement.querySelectorAll('.msg-opt').forEach(b=>{b.style.pointerEvents='none'});
+    el.classList.add('selected');
+    caseData[key]=val;
+    appendMsg(`<div class="msg msg-user">${val}</div>`);
+    chatStep++;setTimeout(()=>askStep(),400);
+  }
+}
+
+function sendInput(){
+  let inp=document.getElementById('chatInput');
+  let val=inp.value.trim();if(!val)return;
+  let key=inp.dataset.key;
+  caseData[key]=val;
+  appendMsg(`<div class="msg msg-user">${val}</div>`);
+  inp.value='';
+  document.getElementById('chatInputWrap').classList.add('hidden');
+  chatStep++;setTimeout(()=>askStep(),400);
+}
+
+function showTyping(){appendMsg(`<div class="typing" id="typingInd"><span></span><span></span><span></span></div>`)}
+function removeTyping(){let t=document.getElementById('typingInd');if(t)t.remove()}
+
+function appendMsg(html){
+  let body=document.getElementById('chatBody');
+  body.insertAdjacentHTML('beforeend',html);
+  body.scrollTop=body.scrollHeight;
+}
+
+/* === FINISH → CHECKLIST === */
+function finishChat(){
+  showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    let amt=parseInt(caseData.amount)||0;
+    let summary=`已收到你的信息。根据你的情况：\n\n` +
+      `• 职业：${caseData.profession||'-'}\n`+
+      `• 城市：${caseData.city||'-'}\n`+
+      `• 被欠金额：¥${amt.toLocaleString()}\n`+
+      `• 拖欠时长：${caseData.duration||'-'}\n\n`+
+      `我已经帮你生成了一份完整的维权checklist。点击下方按钮查看。`;
+    appendMsg(`<div class="msg msg-ai"><div style="white-space:pre-line">${summary}</div>
+      <div style="margin-top:12px"><button class="msg-opt" style="background:var(--lime);color:var(--bg);border-color:var(--lime);width:100%;padding:12px;font-weight:700;font-size:14px" onclick="showChecklist()">查看我的维权Checklist</button></div>
+    </div>`);
+  },1200);
+}
+
+function showChecklist(){
+  showScr('checklistScreen');
+  renderChecklist();
+}
+
+function renderChecklist(){
+  let amt=parseInt(caseData.amount)||0;
+  let hasContract=(caseData.agreement||[]).some(a=>a.includes('合同'));
+  let hasChat=(caseData.evidence||[]).includes('微信聊天记录');
+  let hasTransfer=(caseData.evidence||[]).includes('转账/收款记录');
+  let companyGone=(caseData.opponentStatus||'').includes('倒闭');
+
+  // Determine route
+  let route='劳动仲裁';
+  let routeNote='适用于与公司的劳务纠纷';
+  if(caseData.opponentStatus==='是个人，不是公司'){route='民事诉讼（起诉个人）';routeNote='个人欠款走法院民事诉讼'}
+  if(amt<10000){routeNote+='。小额（1万以下）可走小额诉讼程序，一审终审。'}
+
+  let html=`
+    <div class="cl-summary">
+      <div class="cl-amount-label">预计可主张金额</div>
+      <div class="cl-amount">¥${amt.toLocaleString()}</div>
+      <div style="text-align:center;font-size:11px;color:var(--w4);margin-top:4px">
+        建议维权路径：<span style="color:var(--lime)">${route}</span>
+      </div>
+      <div style="text-align:center;font-size:10px;color:var(--w2);margin-top:4px">${routeNote}</div>
+    </div>
+
+    <div class="cl-tip">你的情况${hasChat||hasTransfer?'有聊天记录或转账记录作为证据，胜率较高':'证据较少，建议先补充证据再申请'}。${companyGone?'对方已倒闭，可尝试追究股东责任或申报债权。':''}${!hasContract?'虽然没有正式合同，但微信记录、交付物等同样具有法律效力。':''}</div>
+
+    <div class="cl-group">
+      <div class="cl-group-title">STEP 1 / 收集证据</div>
+      ${makeClItem('截图保存所有微信聊天记录','包含对方头像、昵称、时间，完整不要裁剪')}
+      ${makeClItem('导出微信聊天记录备份','微信 → 设置 → 通用 → 聊天记录迁移与备份')}
+      ${makeClItem('打印银行转账流水','去银行柜台打印并盖章，电子版效力不够')}
+      ${makeClItem('整理已交付的工作成果','成片、源文件、设计稿等，证明你已完成工作')}
+      ${makeClItem('查询对方公司工商信息','天眼查/企查查搜索公司名，截图保存营业执照信息')}
+      ${hasContract?'':makeClItem('补发一条微信确认欠款事实','比如："之前XX项目的尾款X万，你看什么时候方便？"让对方回复确认')}
+    </div>
+
+    <div class="cl-group">
+      <div class="cl-group-title">STEP 2 / 准备申请材料</div>
+      ${makeClItem('准备身份证原件 + 复印件3份','')}
+      ${makeClItem('打印对方公司工商登记信息','天眼查截图打印即可')}
+      ${makeClItem('生成仲裁/起诉申请书','本工具可自动生成，见下方文书')}
+      ${makeClItem('整理证据清单并编号','每份证据编号，注明证据名称和证明目的')}
+      ${makeClItem('所有材料准备三份','自己一份、仲裁庭/法院一份、对方一份')}
+    </div>
+
+    <div class="cl-group">
+      <div class="cl-group-title">STEP 3 / 提交申请</div>
+      ${renderLocationCard()}
+      ${makeClItem(`带齐材料前往上述仲裁委/法院`,`建议工作日上午去，人少效率高`)}
+      ${makeClItem('到立案窗口提交材料','工作人员会审查，5个工作日内决定受理')}
+      ${makeClItem('领取受理通知书','受理后会给你一份，保存好')}
+    </div>
+
+    <div class="cl-group">
+      <div class="cl-group-title">STEP 4 / 开庭</div>
+      ${makeClItem('等待开庭通知（30-45天）','仲裁委会书面通知开庭时间')}
+      ${makeClItem('开庭当天带好所有证据原件','')}
+      ${makeClItem('庭审流程：陈述→举证→质证→辩论','据实陈述，不要夸大，仲裁员会引导')}
+      ${makeClItem('如果调解金额合理可以接受','调解书与裁决书法律效力相同')}
+    </div>
+
+    <div class="cl-group">
+      <div class="cl-group-title">STEP 5 / 拿钱</div>
+      ${makeClItem('拿到裁决书后等15天','对方15天内未起诉则裁决生效')}
+      ${makeClItem('对方不付钱→申请强制执行','拿裁决书去法院执行局，法院冻结对方账户')}
+    </div>
+
+    ${renderTipsSection()}
+  `;
+
+  // Generate doc
+  let today=new Date();
+  let ds=`${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  let docText = generateDocText(amt, hasContract, ds);
+  html+=`
+    <div class="cl-doc">
+      <div class="cl-doc-header">
+        <div class="cl-doc-title">仲裁申请书（预览）</div>
+        <div class="cl-doc-action" onclick="exportDocx()">WORD</div>
+      </div>
+      <div class="cl-doc-body" id="docContent">${docText}</div>
+    </div>
+
+    <div class="cl-tip">申请书中（括号）内容需要你补充填写。下载后用Word或Pages打开编辑，打印后手写签名。</div>
+
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="cl-export-btn" onclick="exportDocx()" style="flex:1">下载 Word 文档</button>
+      <button class="cl-export-btn" onclick="exportDocx()" style="flex:1;background:var(--bg3);color:var(--lime);border:1px solid var(--lime-border)">下载 Pages</button>
+    </div>
+    <button class="cl-outline-btn" onclick="showScr('chatScreen')">返回对话</button>
+  `;
+
+  document.getElementById('clBody').innerHTML=html;
+
+  // Add click handlers
+  document.querySelectorAll('.cl-item').forEach(item=>{
+    item.addEventListener('click',()=>item.classList.toggle('done'));
+  });
+}
+
+function makeClItem(text,sub){
+  return `<div class="cl-item"><div class="cl-check">✓</div><div><div class="cl-item-text">${text}</div>${sub?`<div class="cl-item-sub">${sub}</div>`:''}</div></div>`;
+}
+
+function renderLocationCard(){
+  let city=caseData.city||'';
+  let searchQuery=encodeURIComponent(`${city}劳动人事争议仲裁委员会`);
+  let baiduMapUrl=`https://map.baidu.com/search/${searchQuery}`;
+  let amapUrl=`https://www.amap.com/search?query=${searchQuery}`;
+  return `
+    <div class="loc-card">
+      <div class="loc-title">📍 递交地点</div>
+      <div class="loc-addr">
+        <b>${city||'你所在城市'}劳动人事争议仲裁委员会</b><br>
+        通常位于${city||'当地'}人力资源和社会保障局内或附近。<br>
+        如果对方公司注册地和你工作地不在同一个区，<b>两个区的仲裁委都可以</b>，选离你近的。
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <a class="loc-map-btn" href="${baiduMapUrl}" target="_blank" rel="noopener">百度地图搜索</a>
+        <a class="loc-map-btn" href="${amapUrl}" target="_blank" rel="noopener">高德地图搜索</a>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--lime-dim2);border-radius:4px;font-size:11px;color:rgba(200,240,58,.7);line-height:1.6">
+        去之前先打电话确认地址和所需材料：搜索"${city||'XX'}区劳动仲裁委 电话"
+      </div>
+    </div>`;
+}
+
+function renderTipsSection(){
+  return `
+    <div class="cl-group">
+      <div class="cl-group-title">PRACTICAL TIPS / 实战建议</div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 01</div>
+        <div class="tip-title">开庭前先发一条"最后通牒"微信</div>
+        <div class="tip-body">提交仲裁前，给对方发一条微信："XX项目的尾款¥${(parseInt(caseData.amount)||0).toLocaleString()}，请在X天内支付，否则我将通过法律途径解决。"<br><b>这条消息本身就是证据</b>，证明你催过、对方不付。很多时候发完这条，对方反而会主动找你谈。</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 02</div>
+        <div class="tip-title">聊天记录截图有讲究</div>
+        <div class="tip-body">不要只截关键几句，要<b>完整截图整个对话</b>，包含：<br>• 对方的微信头像和昵称<br>• 消息的完整时间<br>• 谈价格、确认合作、催款的全过程<br>• 不要裁剪、不要拼接<br><b>最好的方式</b>：用另一台手机录屏，从头到尾滑动翻看整个聊天记录。</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 03</div>
+        <div class="tip-title">不要怕"没合同就没法告"</div>
+        <div class="tip-body"><b>这是最大的误解。</b>中国法律不要求必须有书面合同才能维权。微信聊天、邮件、转账记录、交付的工作成果，这些加在一起就能证明：<br>1. 你们存在合作关系<br>2. 约定了多少钱<br>3. 你完成了工作<br>4. 对方没付钱</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 04</div>
+        <div class="tip-title">开庭不需要太紧张</div>
+        <div class="tip-body">仲裁庭不是电视里那种法庭。<b>仲裁员态度通常很好</b>，会引导你陈述。你只需要：<br>• 带好所有证据原件<br>• 据实陈述经过，不要夸大<br>• 对方说什么先听完，不要打断<br>• 仲裁员问什么答什么<br>• 穿着正常就行，不需要西装</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 05</div>
+        <div class="tip-title">调解 ≠ 吃亏</div>
+        <div class="tip-body">仲裁庭会先尝试调解。如果对方愿意当场付钱或者短期内付，<b>调解可能是更好的选择</b>：<br>• 调解书法律效力等同裁决书<br>• 调解通常更快拿到钱<br>• 如果对方同意付80%以上，认真考虑接受<br>• 但如果对方只愿意付很少，就坚持裁决</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 06</div>
+        <div class="tip-title">对方不到庭？对你有利</div>
+        <div class="tip-body">很多被告收到通知后不来开庭，以为不来就没事。<b>恰恰相反</b>——对方不到庭，仲裁庭会<b>缺席裁决</b>，通常对申请人更有利，因为对方放弃了质证和辩论的权利。</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 07</div>
+        <div class="tip-title">赢了官司对方不给钱怎么办</div>
+        <div class="tip-body">拿到生效裁决书后，直接去法院<b>申请强制执行</b>。法院可以：<br>• 冻结并划扣对方银行账户<br>• 查封对方房产、车辆<br>• 将对方列入失信被执行人名单（"老赖"名单）<br>• 限制对方高消费（不能坐飞机、高铁）<br><b>这招对公司法人和个人都非常有效。</b></div>
+        <div class="tip-warn">注意：申请强制执行有时效，裁决书生效后2年内必须申请。</div>
+      </div>
+      <div class="tips-card">
+        <div class="tip-num">TIP 08</div>
+        <div class="tip-title">时效很重要，别拖太久</div>
+        <div class="tip-body">劳动仲裁时效是<b>1年</b>（从你知道权益被侵害之日起算）。如果你被拖欠超过1年，也不要慌——<b>只要你中间催过款（有微信记录），时效就会中断重新计算</b>。所以催款记录非常重要。</div>
+      </div>
+    </div>`;
+}
+
+function generateDocText(amt, hasContract, ds){
+  return `申请人：（你的姓名），身份证号：（你的身份证号），联系电话：（你的手机号）
+
+被申请人：（对方公司/个人名称），统一社会信用代码：（信用代码），地址：（对方地址）
+
+仲裁请求：
+1. 请求被申请人支付劳务报酬人民币${amt.toLocaleString()}元；
+2. 请求被申请人支付上述欠款的逾期利息。
+
+事实与理由：
+申请人系${caseData.profession||'自由职业者'}，于（时间）与被申请人达成合作${hasContract?'，双方签订了合作协议':'，通过微信沟通确认了合作内容和报酬金额'}。约定报酬为人民币${amt.toLocaleString()}元。
+
+${caseData.description||'（请补充具体项目情况）'}
+
+申请人已按约完成全部工作并交付成果，但被申请人至今未支付剩余劳务报酬，经多次催促仍拒不支付。
+
+被申请人的行为已构成违约，严重侵害了申请人的合法权益。为维护申请人的合法权益，特依法申请仲裁，望依法裁决。
+
+此致
+${caseData.city||'____'}劳动人事争议仲裁委员会
+
+申请人：______
+${ds}`;
+}
+
+function exportDocx(){
+  let amt=parseInt(caseData.amount)||0;
+  let hasContract=(caseData.agreement||[]).some(a=>a.includes('合同'));
+  let today=new Date();
+  let ds=`${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+
+  let htmlContent=`
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 2.54cm 3.17cm 2.54cm 3.17cm; }
+  body { font-family: "SimSun", "宋体", serif; font-size: 14pt; line-height: 28pt; color: #000; }
+  h1 { font-family: "SimHei", "黑体", sans-serif; font-size: 22pt; text-align: center; margin: 40pt 0 30pt; letter-spacing: 2pt; }
+  .section { margin-bottom: 14pt; text-indent: 0; }
+  .label { font-weight: bold; }
+  .indent { text-indent: 28pt; }
+  .requests { margin-left: 28pt; }
+  .sign { text-align: right; margin-top: 40pt; line-height: 36pt; }
+  .zhici { margin-top: 28pt; }
+</style>
+</head>
+<body>
+
+<h1>劳动仲裁申请书</h1>
+
+<div class="section">
+  <span class="label">申请人：</span>（你的姓名），性别：____，民族：____，身份证号：（你的身份证号），住址：（你的住址），联系电话：（你的手机号）
+</div>
+
+<div class="section">
+  <span class="label">被申请人：</span>（对方公司/个人全称）<br>
+  统一社会信用代码：（在天眼查查询填入）<br>
+  法定代表人：（在天眼查查询填入）<br>
+  住所地：（对方注册地址）<br>
+  联系电话：（对方电话，如有）
+</div>
+
+<div class="section">
+  <span class="label">仲裁请求：</span><br>
+  <div class="requests">
+    1. 请求裁决被申请人支付申请人劳务报酬人民币${amt.toLocaleString()}元；<br>
+    2. 请求裁决被申请人支付上述欠款自逾期之日起至实际支付之日止的逾期利息（按全国银行间同业拆借中心公布的贷款市场报价利率计算）。
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">事实与理由：</span>
+</div>
+
+<div class="indent">
+  申请人系${caseData.profession||'自由职业者'}，于（具体时间）与被申请人达成合作${hasContract?'，双方签订了书面合作协议':'，双方通过微信沟通确认了合作内容和报酬金额（虽未签订书面合同，但已形成事实上的劳务合同关系）'}。双方约定被申请人支付申请人劳务报酬共计人民币${amt.toLocaleString()}元。
+</div>
+
+<div class="indent" style="margin-top:14pt">
+  ${caseData.description||'（请在此处详细描述：什么时候开始合作、具体做了什么项目/工作、约定的付款方式和时间、已收到多少款项、从什么时候开始拖欠、催促过几次等具体事实经过）'}
+</div>
+
+<div class="indent" style="margin-top:14pt">
+  申请人已按约定完成全部工作内容并向被申请人交付了工作成果，但被申请人至今未支付剩余劳务报酬人民币${amt.toLocaleString()}元。申请人多次催促，被申请人均以各种理由推诿拖延，拒不支付。
+</div>
+
+<div class="indent" style="margin-top:14pt">
+  申请人认为，申请人与被申请人之间已形成合法有效的劳务合同关系。申请人依约完成工作并交付成果，被申请人理应按约支付劳务报酬。被申请人拖欠劳务报酬的行为已严重违反了《中华人民共和国民法典》第五百七十七条、第五百七十九条以及《中华人民共和国劳动合同法》等相关法律规定，侵害了申请人的合法权益。
+</div>
+
+<div class="indent" style="margin-top:14pt">
+  为维护申请人的合法权益，特依据《中华人民共和国劳动争议调解仲裁法》之规定，向贵委提起仲裁申请，恳请依法裁决，支持申请人的全部仲裁请求。
+</div>
+
+<div class="zhici">此致</div>
+<div>${caseData.city||'____'}劳动人事争议仲裁委员会</div>
+
+<div class="sign">
+  申请人（签名）：______________<br>
+  日期：${ds}
+</div>
+
+<div style="margin-top:40pt;border-top:1px solid #ccc;padding-top:14pt;">
+  <span class="label">证据清单：</span><br>
+  <div class="requests">
+    ${(caseData.evidence||['（请列出你的证据）']).map((e,i)=>`${i+1}. ${e}<br>`).join('')}
+  </div>
+</div>
+
+</body>
+</html>`;
+
+  let blob = new Blob(['\ufeff'+htmlContent], {type:'application/msword'});
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '劳动仲裁申请书.doc';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* === TEMPLATE PACKS === */
+const tplPacks = [
+  {
+    title:'Freelancer 基础合同模板',
+    icon:'📄', price:'免费', isFree:true,
+    desc:'最简单的劳务合同模板，一页纸搞定。微信谈完项目后直接发给对方签字，关键条款全覆盖。适用于所有类型的Freelancer。',
+    files:[
+      {icon:'📝',name:'Freelancer 通用劳务合同.docx',desc:'含工作内容、报酬金额、付款时间、违约条款'},
+      {icon:'📝',name:'Freelancer Service Agreement (EN).docx',desc:'英文版，适用于海外客户'},
+      {icon:'📖',name:'合同使用说明.pdf',desc:'怎么填、怎么签、注意事项'},
+    ],
+    tips:[
+      '合同不需要去公证处，双方签字/盖章即可生效',
+      '电子签名（微信发送+对方回复确认）也有法律效力',
+      '合同中最重要的三个条款：金额、付款时间、违约责任',
+      '建议付款方式写"分期"：签约付50%，交付付50%',
+    ]
+  },
+  {
+    title:'影视广告 Freelancer 全套合同包',
+    icon:'📦', price:'¥49', isFree:false,
+    desc:'专为影视广告行业Freelancer（导演、摄影师、剪辑师、制片）定制。从报价到收款的完整文件链，每一步都有模板。',
+    files:[
+      {icon:'💰',name:'项目报价单模板.docx',desc:'专业报价单，含税费说明、付款节点'},
+      {icon:'📝',name:'影视制作劳务合同.docx',desc:'含拍摄周期、超时费用、设备损坏责任'},
+      {icon:'✅',name:'项目确认函.docx',desc:'项目启动前双方确认工作内容和排期'},
+      {icon:'📋',name:'成果验收确认单.docx',desc:'交付成果后让对方签字确认，防止赖账'},
+      {icon:'⚠️',name:'催款函模板.docx',desc:'专业的催款函，温和但有法律效力'},
+      {icon:'📖',name:'谈价话术指南.pdf',desc:'怎么报价不被砍、怎么谈付款方式、常见话术'},
+    ],
+    tips:[
+      '接活之前先发报价单，价格白纸黑字写清楚',
+      '合同里一定要写"预付款不低于50%"',
+      '交付成果时务必让对方签验收确认单',
+      '催款函发了之后对方15天不回应，就可以直接走法律程序',
+      '拍摄超时另外收费，要在合同里写明按天/半天计费标准',
+    ]
+  },
+  {
+    title:'设计师 / 插画师 防坑合同包',
+    icon:'🛡', price:'¥39', isFree:false,
+    desc:'专治"做完了不给钱"和"无限改稿"两大行业毒瘤。版权归属写得明明白白，修改次数白纸黑字。',
+    files:[
+      {icon:'📝',name:'设计委托合同.docx',desc:'含修改次数限制（3次免费）、超出按次收费'},
+      {icon:'©️',name:'版权转让协议.docx',desc:'约定版权归属，买断/授权两种方案'},
+      {icon:'💰',name:'设计报价单.docx',desc:'含不同设计类型的报价框架'},
+      {icon:'✅',name:'设计修改确认单.docx',desc:'每次修改让对方签字，记录修改次数'},
+      {icon:'📖',name:'设计师维权指南.pdf',desc:'被抄袭、被拖欠怎么办的完整指南'},
+    ],
+    tips:[
+      '合同里写"未付清全款前，版权归设计师所有"',
+      '修改超过约定次数，每次额外收取设计费的20%',
+      '源文件在收到全款后才发送',
+      '发送稿件时加水印，终稿收款后再发无水印版',
+    ]
+  },
+  {
+    title:'音乐人 / 编曲 合同包',
+    icon:'🎵', price:'¥39', isFree:false,
+    desc:'音乐制作、编曲、混音的委托合同。含版权买断和授权两种方案，使用范围约定得清清楚楚。',
+    files:[
+      {icon:'📝',name:'音乐制作委托合同.docx',desc:'含制作周期、修改次数、付款节点'},
+      {icon:'©️',name:'音乐版权授权书.docx',desc:'按使用范围授权（商用/非商用/独家）'},
+      {icon:'💰',name:'音乐制作报价单.docx',desc:'编曲、混音、母带分项报价'},
+    ],
+    tips:[
+      '音乐版权分"词曲权"和"录音权"，合同里要分别约定',
+      '商用授权和非商用授权价格差异应该写在合同里',
+      '交付demo时用低音质版本，全款后发高音质终版',
+    ]
+  },
+  {
+    title:'Freelancer 生存全套 Pro Pack',
+    icon:'💼', price:'¥99', isFree:false,
+    desc:'一次买齐所有合同模板 + 谈价策略 + 催款话术 + 避坑清单 + 发票指南。从接活到收款的全流程武器库。',
+    files:[
+      {icon:'📦',name:'全部合同模板（15份）',desc:'以上所有合同包的全部文件'},
+      {icon:'💬',name:'谈价策略指南.pdf',desc:'怎么报价、怎么应对砍价、什么时候该拒绝'},
+      {icon:'⚠️',name:'催款话术模板集.pdf',desc:'温和催款、正式催款、最后通牒三个阶段的话术'},
+      {icon:'🚩',name:'接活避坑清单.pdf',desc:'20个危险信号：遇到这些情况赶紧跑'},
+      {icon:'🧾',name:'Freelancer发票指南.pdf',desc:'个人怎么开发票、税点多少、怎么在税务局代开'},
+      {icon:'🔄',name:'持续更新权益',desc:'后续新增模板免费获取'},
+    ],
+    tips:[
+      '报价时永远不要先说价格，先问对方预算',
+      '遇到"先做了再谈价"的客户，100%跑路预警',
+      '合同约定"预付款不低于总价50%"是底线',
+      '每个项目建一个文件夹，保存所有沟通记录和文件',
+      '发票可以去税务局代开，个人劳务税率约20%（可抵扣）',
+    ]
+  }
+];
+
+function showTplDetail(idx){
+  let t = tplPacks[idx];
+  let html = `
+    <div class="tpl-detail-hero">
+      <div style="font-size:48px;margin-bottom:12px">${t.icon}</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px">${t.title}</div>
+      <div style="font-size:13px;color:var(--w4);line-height:1.6;margin-bottom:12px">${t.desc}</div>
+      <div style="font-family:var(--pixel);font-size:14px;color:var(--lime)">${t.price}</div>
+    </div>
+    <div class="tpl-detail-body">
+      <div class="sec-head" style="padding:0;margin-bottom:12px">INCLUDED FILES</div>
+      ${t.files.map(f=>`
+        <div class="tpl-file-item">
+          <div class="tpl-file-icon">${f.icon}</div>
+          <div class="tpl-file-info">
+            <div class="tpl-file-name">${f.name}</div>
+            <div class="tpl-file-desc">${f.desc}</div>
+          </div>
+        </div>
+      `).join('')}
+
+      <div class="sec-head" style="padding:0;margin-top:20px;margin-bottom:12px">TIPS / 使用建议</div>
+      ${t.tips.map(tip=>`
+        <div style="display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:var(--w7);line-height:1.6">
+          <span style="color:var(--lime);flex-shrink:0">></span>
+          <span>${tip}</span>
+        </div>
+      `).join('')}
+
+      ${t.isFree?`
+        <button class="tpl-buy-btn free-btn" onclick="alert('免费模板下载功能即将上线')">免费下载</button>
+      `:`
+        <button class="tpl-buy-btn" onclick="alert('支付功能即将上线，敬请期待')">${t.price} 立即购买</button>
+      `}
+      <div style="text-align:center;font-size:10px;color:var(--w2);margin-top:12px;padding-bottom:20px">购买后立即下载 / 含所有文件的ZIP压缩包</div>
+    </div>
+  `;
+  document.getElementById('tplDetailBody').innerHTML = html;
+  showScr('tplDetailScreen');
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
