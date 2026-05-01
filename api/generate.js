@@ -2,7 +2,7 @@
 const SUNOR_BASE = 'https://sunor.cc/api/v1';
 const SUNOR_KEY = process.env.SUNOR_API_KEY || '';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         credits_charged: data.data.credits_charged,
       });
     } else {
-      res.status(400).json({ error: data });
+      res.status(400).json({ error: data.message || data.msg || ('API error: code ' + data.code) });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });

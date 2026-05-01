@@ -29,7 +29,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-links a:hover{color:var(--neon)}
 .nav-pill{padding:5px 14px;border:1px solid var(--neon);color:var(--neon)!important;border-radius:3px;transition:all .2s!important}
 .nav-pill:hover{background:var(--neon)!important;color:#0e0e0d!important}
-@media(max-width:640px){.nav-links{gap:10px}.nav-links a{font-size:9px}}
+/* HAMBURGER */
+.hamburger{display:none;background:none;border:none;color:var(--neon);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1}
+@media(max-width:768px){
+  .nav-links{display:none;position:absolute;top:100%;right:0;background:rgba(14,14,13,.97);border:1px solid rgba(200,240,58,.12);border-radius:6px;flex-direction:column;padding:16px 24px;gap:14px;min-width:180px}
+  .nav-links.open{display:flex}
+  .hamburger{display:block}
+}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 24px 80px;position:relative;overflow:hidden}
@@ -122,10 +128,13 @@ main{position:relative;z-index:2}
       <span class="n2">解 锁 影 像</span>
     </div>
   </a>
+  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
   <div class="nav-links">
-    <a href="#products">产品 PRODUCTS</a>
+    <a href="/">首页 HOME</a>
+    <a href="stylecard.html">StyleCard</a>
+    <a href="soundcard.html">SoundCard</a>
     <a href="pricing.html">报价 PRICING</a>
-    <a href="#community">社群 COMMUNITY</a>
+    <a href="legal.html">维权 WHO TM</a>
     <a href="#community" class="nav-pill">免费加入 JOIN</a>
   </div>
 </nav>
